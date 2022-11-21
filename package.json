@@ -1,7 +1,11 @@
 {
   "name": "battleship-be",
   "private": true,
-  "scripts": {},
+  "scripts": {
+    "dev": "webpack --disable-interpret --env mode=dev",
+    "build": "webpack --disable-interpret",
+    "start": "node dist/"
+  },
   "dependencies": {
     "@babel/core": "^7.20.2",
     "@babel/plugin-transform-modules-commonjs": "^7.19.6",

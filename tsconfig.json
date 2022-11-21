@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "exactOptionalPropertyTypes": true,
+    "noUncheckedIndexedAccess": true,
+    "strict": true,
+
+    "module": "commonjs",
+    "moduleResolution": "node",
+
+    "newLine": "lf",
+    "sourceMap": true,
+
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": false,
+    "forceConsistentCasingInFileNames": true,
+
+    "lib": ["ESNext"],
+    "target": "ESNext"
+  }
+}
