@@ -4,7 +4,8 @@
   "scripts": {
     "dev": "webpack --disable-interpret --env mode=dev",
     "build": "webpack --disable-interpret",
-    "start": "node dist/"
+    "start": "node dist/",
+    "lint": "eslint . --ext .ts"
   },
   "dependencies": {
     "@babel/core": "^7.20.2",
