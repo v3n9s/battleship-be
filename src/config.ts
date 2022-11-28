@@ -5,6 +5,7 @@ const ajv = new Ajv({ allErrors: true, coerceTypes: true, useDefaults: true });
 
 interface Config {
   port: number;
+  jwtSecret: string;
 }
 
 const configSchema: JSONSchemaType<Config> = {
@@ -16,12 +17,16 @@ const configSchema: JSONSchemaType<Config> = {
       maximum: 65535,
       default: 3000,
     },
+    jwtSecret: {
+      type: 'string',
+    },
   },
-  required: ['port'],
+  required: ['port', 'jwtSecret'],
 };
 
 const config = {
   port: process.env.PORT,
+  jwtSecret: process.env.JWT_SECRET,
 };
 
 const validate = ajv.compile(configSchema);
