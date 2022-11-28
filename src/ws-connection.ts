@@ -1,4 +1,11 @@
 import { RawData, WebSocket } from 'ws';
+import {
+  ServerMessage,
+  ServerMessageTypes,
+  ClientMessage,
+  isValidClientMessage,
+  isExistingClientMessage,
+} from './messages';
 
 class Connections {
   connections: Connection[] = [];
@@ -19,19 +26,47 @@ class Connection {
     this.socket.on('message', this.onMessage.bind(this));
   }
 
+  send(message: ServerMessage) {
+    this.socket.send(JSON.stringify(message));
+  }
+
   onMessage(data: RawData, isBin: boolean) {
     if (isBin || !(data instanceof Buffer)) {
+      this.send({
+        type: ServerMessageTypes.Error,
+        text: 'Not supported message payload',
+      });
       return;
     }
     let message: unknown;
     try {
       message = JSON.parse(data.toString());
     } catch {
+      this.send({
+        type: ServerMessageTypes.Error,
+        text: 'Unable to parse message',
+      });
+      return;
+    }
+
+    if (!isExistingClientMessage(message)) {
+      this.send({
+        type: ServerMessageTypes.Error,
+        text: 'Not supported message type',
+      });
+      return;
+    }
+
+    if (!isValidClientMessage(message)) {
+      this.send({
+        type: ServerMessageTypes.Error,
+        text: 'Message data is wrong',
+      });
       return;
     }
 
     this.handleMessage(message);
   }
 
-  handleMessage(message: unknown) {}
+  handleMessage(message: ClientMessage) {}
 }
