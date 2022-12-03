@@ -1,7 +1,7 @@
 import http from 'http';
 import jwt from 'jsonwebtoken';
 import { WebSocketServer } from 'ws';
-import { connections, tokenPayloadValidationFunc } from './ws-connection';
+import { connections, tokenPayloadValidationFunc } from './connection';
 import config from './config';
 import internal from 'stream';
 
