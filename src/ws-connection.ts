@@ -1,4 +1,6 @@
+import { JSONSchemaType } from 'ajv';
 import { RawData, WebSocket } from 'ws';
+import { ajv } from './ajv-instance';
 import {
   ServerMessage,
   ServerMessageTypes,
@@ -10,17 +12,29 @@ import {
 class Connections {
   connections: Connection[] = [];
 
-  handle(socket: WebSocket) {
-    this.connections.push(new Connection(socket));
+  handle(...args: ConstructorParameters<typeof Connection>) {
+    this.connections.push(new Connection(...args));
   }
 }
 
 export const connections = new Connections();
 
 class Connection {
+  id: string;
+
+  name: string;
+
   socket: WebSocket;
 
-  constructor(socket: WebSocket) {
+  constructor({
+    session,
+    socket,
+  }: {
+    session: TokenPayload;
+    socket: WebSocket;
+  }) {
+    this.id = session.id;
+    this.name = session.name;
     this.socket = socket;
 
     this.socket.on('message', this.onMessage.bind(this));
@@ -95,3 +109,26 @@ class Connection {
 
   handleMessage(message: ClientMessage) {}
 }
+
+export type TokenPayload = {
+  id: string;
+  name: string;
+};
+
+export const tokenPayloadSchema: JSONSchemaType<TokenPayload> = {
+  type: 'object',
+  properties: {
+    id: {
+      type: 'string',
+      minLength: 36,
+      maxLength: 36,
+    },
+    name: {
+      type: 'string',
+      minLength: 1,
+    },
+  },
+  required: ['id', 'name'],
+};
+
+export const tokenPayloadValidationFunc = ajv.compile(tokenPayloadSchema);

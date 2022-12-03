@@ -1,4 +1,3 @@
-import config from './config';
-import { startWsServer } from './ws-server';
+import { startServer } from './server';
 
-startWsServer(config.port);
+startServer();
