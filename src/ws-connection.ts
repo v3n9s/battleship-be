@@ -3,8 +3,8 @@ import {
   ServerMessage,
   ServerMessageTypes,
   ClientMessage,
-  isValidClientMessage,
-  isExistingClientMessage,
+  ClientMessageTypes,
+  ClientMessageValidatonFuncs,
 } from './messages';
 
 class Connections {
@@ -30,6 +30,31 @@ class Connection {
     this.socket.send(JSON.stringify(message));
   }
 
+  isExistingClientMessage(message: unknown): message is {
+    type: keyof typeof ClientMessageTypes;
+  } {
+    if (
+      !(
+        message &&
+        typeof message === 'object' &&
+        'type' in message &&
+        typeof message.type === 'string'
+      )
+    ) {
+      return false;
+    }
+    const type =
+      ClientMessageTypes[message.type as keyof typeof ClientMessageTypes];
+    if (!type) return false;
+    return true;
+  }
+
+  isValidClientMessage(message: {
+    type: keyof typeof ClientMessageTypes;
+  }): message is ClientMessage {
+    return ClientMessageValidatonFuncs[message.type](message);
+  }
+
   onMessage(data: RawData, isBin: boolean) {
     if (isBin || !(data instanceof Buffer)) {
       this.send({
@@ -49,7 +74,7 @@ class Connection {
       return;
     }
 
-    if (!isExistingClientMessage(message)) {
+    if (!this.isExistingClientMessage(message)) {
       this.send({
         type: ServerMessageTypes.Error,
         text: 'Not supported message type',
@@ -57,7 +82,7 @@ class Connection {
       return;
     }
 
-    if (!isValidClientMessage(message)) {
+    if (!this.isValidClientMessage(message)) {
       this.send({
         type: ServerMessageTypes.Error,
         text: 'Message data is wrong',
