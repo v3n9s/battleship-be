@@ -6,14 +6,14 @@ import {
   UnionFromObject,
   WrapValueWithTypeObject,
 } from '../../utils/types';
-import { ShowTokenMessage, showTokenMessageSchema } from './messages';
+import { CreateRoomMessage, createRoomMessageSchema } from './messages';
 
 export type ClientMessages = {
-  ShowToken: ShowTokenMessage;
+  CreateRoom: CreateRoomMessage;
 };
 
 export const ClientMessageTypes = {
-  ShowToken: 'ShowToken',
+  CreateRoom: 'CreateRoom',
 } as const satisfies KeysAsValues<ClientMessages>;
 
 export type ClientMessage = UnionFromObject<
@@ -25,7 +25,7 @@ export type ClientMessage = UnionFromObject<
 
 export const ClientMessageValidatonFuncs = Object.fromEntries(
   Object.entries({
-    ShowToken: showTokenMessageSchema,
+    CreateRoom: createRoomMessageSchema,
   } satisfies {
     [K in keyof ClientMessages]: JSONSchemaType<ClientMessages[K]>;
   }).map(([k, v]) => [k, ajv.compile(v)]),

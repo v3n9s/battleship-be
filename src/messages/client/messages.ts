@@ -1,15 +1,22 @@
 import { JSONSchemaType } from 'ajv';
 
-export type ShowTokenMessage = {
-  token: string;
+export type CreateRoomMessage = {
+  name: string;
+  password: string;
 };
 
-export const showTokenMessageSchema: JSONSchemaType<ShowTokenMessage> = {
+export const createRoomMessageSchema: JSONSchemaType<CreateRoomMessage> = {
   type: 'object',
   properties: {
-    token: {
+    name: {
       type: 'string',
+      minLength: 1,
+      maxLength: 32,
+    },
+    password: {
+      type: 'string',
+      maxLength: 32,
     },
   },
-  required: ['token'],
+  required: ['name', 'password'],
 };

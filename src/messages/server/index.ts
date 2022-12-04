@@ -4,16 +4,16 @@ import {
   UnionFromObject,
   WrapValueWithTypeObject,
 } from '../../utils/types';
-import { ErrorMessage, SetTokenMessage } from './messages';
+import { ErrorMessage, RoomCreatedMessage } from './messages';
 
 export type ServerMessages = {
   Error: ErrorMessage;
-  SetToken: SetTokenMessage;
+  RoomCreated: RoomCreatedMessage;
 };
 
 export const ServerMessageTypes = {
   Error: 'Error',
-  SetToken: 'SetToken',
+  RoomCreated: 'RoomCreated',
 } as const satisfies KeysAsValues<ServerMessages>;
 
 export type ServerMessage = UnionFromObject<

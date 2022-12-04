@@ -5,11 +5,21 @@ import {
   ClientMessage,
   ClientMessageTypes,
   ClientMessageValidatonFuncs,
+  CreateRoomMessage,
 } from './messages';
+import { rooms } from './room';
 import { User } from './types';
 
 class Connections {
   connections: Connection[] = [];
+
+  constructor() {
+    rooms.on('roomCreated', (room) => {
+      this.connections.forEach((conn) => {
+        conn.send({ type: ServerMessageTypes.RoomCreated, ...room });
+      });
+    });
+  }
 
   handle(...args: ConstructorParameters<typeof Connection>) {
     this.connections.push(new Connection(...args));
@@ -24,6 +34,10 @@ class Connection {
   name: string;
 
   socket: WebSocket;
+
+  get session() {
+    return { id: this.id, name: this.name };
+  }
 
   constructor({ session, socket }: { session: User; socket: WebSocket }) {
     this.id = session.id;
@@ -100,5 +114,13 @@ class Connection {
     this.handleMessage(message);
   }
 
-  handleMessage(message: ClientMessage) {}
+  handleMessage(message: ClientMessage) {
+    if (message.type === ClientMessageTypes.CreateRoom) {
+      this.createRoom(message);
+    }
+  }
+
+  createRoom({ name, password }: CreateRoomMessage) {
+    rooms.createRoom({ name, password, creator: this.session });
+  }
 }
