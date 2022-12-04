@@ -2,6 +2,7 @@ import {
   KeysAsValues,
   MergeObjects,
   UnionFromObject,
+  WrapValueWithPayloadObject,
   WrapValueWithTypeObject,
 } from '../../utils/types';
 import { ErrorMessage, RoomCreatedMessage } from './messages';
@@ -18,7 +19,7 @@ export const ServerMessageTypes = {
 
 export type ServerMessage = UnionFromObject<
   MergeObjects<
-    ServerMessages,
+    WrapValueWithPayloadObject<ServerMessages>,
     WrapValueWithTypeObject<typeof ServerMessageTypes>
   >
 >;

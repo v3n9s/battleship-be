@@ -16,7 +16,7 @@ class Connections {
   constructor() {
     rooms.on('roomCreated', (room) => {
       this.connections.forEach((conn) => {
-        conn.send({ type: ServerMessageTypes.RoomCreated, ...room });
+        conn.send({ type: ServerMessageTypes.RoomCreated, payload: room });
       });
     });
   }
@@ -53,13 +53,15 @@ class Connection {
 
   isExistingClientMessage(message: unknown): message is {
     type: keyof typeof ClientMessageTypes;
+    payload: unknown;
   } {
     if (
       !(
         message &&
         typeof message === 'object' &&
         'type' in message &&
-        typeof message.type === 'string'
+        typeof message.type === 'string' &&
+        'payload' in message
       )
     ) {
       return false;
@@ -80,7 +82,7 @@ class Connection {
     if (isBin || !(data instanceof Buffer)) {
       this.send({
         type: ServerMessageTypes.Error,
-        text: 'Not supported message payload',
+        payload: { text: 'Not supported message payload' },
       });
       return;
     }
@@ -90,7 +92,7 @@ class Connection {
     } catch {
       this.send({
         type: ServerMessageTypes.Error,
-        text: 'Unable to parse message',
+        payload: { text: 'Unable to parse message' },
       });
       return;
     }
@@ -98,7 +100,7 @@ class Connection {
     if (!this.isExistingClientMessage(message)) {
       this.send({
         type: ServerMessageTypes.Error,
-        text: 'Not supported message type',
+        payload: { text: 'Not supported message type' },
       });
       return;
     }
@@ -106,7 +108,7 @@ class Connection {
     if (!this.isValidClientMessage(message)) {
       this.send({
         type: ServerMessageTypes.Error,
-        text: 'Message data is wrong',
+        payload: { text: 'Message data is wrong' },
       });
       return;
     }
@@ -116,7 +118,7 @@ class Connection {
 
   handleMessage(message: ClientMessage) {
     if (message.type === ClientMessageTypes.CreateRoom) {
-      this.createRoom(message);
+      this.createRoom(message.payload);
     }
   }
 

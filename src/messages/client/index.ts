@@ -4,6 +4,7 @@ import {
   KeysAsValues,
   MergeObjects,
   UnionFromObject,
+  WrapValueWithPayloadObject,
   WrapValueWithTypeObject,
 } from '../../utils/types';
 import { CreateRoomMessage, createRoomMessageSchema } from './messages';
@@ -18,7 +19,7 @@ export const ClientMessageTypes = {
 
 export type ClientMessage = UnionFromObject<
   MergeObjects<
-    ClientMessages,
+    WrapValueWithPayloadObject<ClientMessages>,
     WrapValueWithTypeObject<typeof ClientMessageTypes>
   >
 >;

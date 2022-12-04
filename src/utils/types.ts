@@ -8,6 +8,12 @@ export type WrapValueWithTypeObject<T extends object> = {
   };
 };
 
+export type WrapValueWithPayloadObject<T extends object> = {
+  [K in keyof T]: {
+    payload: T[K];
+  };
+};
+
 export type MergeObjects<T extends object, U extends object> = {
   [K in keyof T & keyof U]: T[K] & U[K];
 };
