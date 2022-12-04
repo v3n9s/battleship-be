@@ -1,6 +1,4 @@
-import { JSONSchemaType } from 'ajv';
 import { RawData, WebSocket } from 'ws';
-import { ajv } from './ajv-instance';
 import {
   ServerMessage,
   ServerMessageTypes,
@@ -8,6 +6,7 @@ import {
   ClientMessageTypes,
   ClientMessageValidatonFuncs,
 } from './messages';
+import { User } from './types';
 
 class Connections {
   connections: Connection[] = [];
@@ -26,13 +25,7 @@ class Connection {
 
   socket: WebSocket;
 
-  constructor({
-    session,
-    socket,
-  }: {
-    session: TokenPayload;
-    socket: WebSocket;
-  }) {
+  constructor({ session, socket }: { session: User; socket: WebSocket }) {
     this.id = session.id;
     this.name = session.name;
     this.socket = socket;
@@ -109,26 +102,3 @@ class Connection {
 
   handleMessage(message: ClientMessage) {}
 }
-
-export type TokenPayload = {
-  id: string;
-  name: string;
-};
-
-export const tokenPayloadSchema: JSONSchemaType<TokenPayload> = {
-  type: 'object',
-  properties: {
-    id: {
-      type: 'string',
-      minLength: 36,
-      maxLength: 36,
-    },
-    name: {
-      type: 'string',
-      minLength: 1,
-    },
-  },
-  required: ['id', 'name'],
-};
-
-export const tokenPayloadValidationFunc = ajv.compile(tokenPayloadSchema);

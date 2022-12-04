@@ -2,10 +2,11 @@ import crypto from 'crypto';
 import http from 'http';
 import jwt from 'jsonwebtoken';
 import { WebSocketServer } from 'ws';
-import { connections, tokenPayloadValidationFunc } from './connection';
+import { connections } from './connection';
 import config from './config';
 import { JSONSchemaType } from 'ajv';
 import { ajv } from './ajv-instance';
+import { userValidationFunc } from './types';
 
 export const startServer = () => {
   const server = http.createServer(requestHandler);
@@ -18,7 +19,7 @@ export const startServer = () => {
     if (
       !token ||
       !isValidTokenSignature(token) ||
-      !tokenPayloadValidationFunc((payload = jwt.decode(token)))
+      !userValidationFunc((payload = jwt.decode(token)))
     ) {
       socket.write('HTTP/1.1 401 \r\n\r\n');
       socket.destroy();
