@@ -59,15 +59,13 @@ class Connection {
 
   isExistingClientMessage(message: unknown): message is {
     type: keyof ClientMessages;
-    payload: unknown;
   } {
     if (
       message &&
       typeof message === 'object' &&
       'type' in message &&
       typeof message.type === 'string' &&
-      message.type in ClientMessageValidatonFuncs &&
-      'payload' in message
+      message.type in ClientMessageValidatonFuncs
     ) {
       return true;
     }
@@ -77,7 +75,8 @@ class Connection {
   isValidClientMessage(message: {
     type: keyof ClientMessages;
   }): message is ClientMessage {
-    return ClientMessageValidatonFuncs[message.type](message);
+    const payload = 'payload' in message ? message.payload : {};
+    return ClientMessageValidatonFuncs[message.type](payload);
   }
 
   onMessage(data: RawData, isBin: boolean) {
