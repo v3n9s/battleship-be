@@ -1,16 +1,14 @@
 import { RawData, WebSocket } from 'ws';
+import { RoomNotFoundError, rooms, WrongRoomPasswordError } from './room';
+import { ClientMessageValidatonFuncs } from './schemas';
 import {
-  ServerMessage,
-  ServerMessageTypes,
   ClientMessage,
-  ClientMessageTypes,
-  ClientMessageValidatonFuncs,
+  ClientMessages,
   CreateRoomMessage,
   JoinRoomMessage,
-  ClientMessages,
-} from './messages';
-import { RoomNotFoundError, rooms, WrongRoomPasswordError } from './room';
-import { User } from './types';
+  ServerMessage,
+  User,
+} from './types';
 
 class Connections {
   connections: Connection[] = [];
@@ -18,13 +16,13 @@ class Connections {
   constructor() {
     rooms.on('roomCreated', (room) => {
       this.connections.forEach((conn) => {
-        conn.send({ type: ServerMessageTypes.RoomCreated, payload: room });
+        conn.send({ type: 'RoomCreated', payload: room });
       });
     });
 
     rooms.on('roomJoin', (payload) => {
       this.connections.forEach((conn) => {
-        conn.send({ type: ServerMessageTypes.RoomJoin, payload });
+        conn.send({ type: 'RoomJoin', payload });
       });
     });
   }
@@ -60,24 +58,20 @@ class Connection {
   }
 
   isExistingClientMessage(message: unknown): message is {
-    type: keyof typeof ClientMessageTypes;
+    type: keyof ClientMessages;
     payload: unknown;
   } {
     if (
-      !(
-        message &&
-        typeof message === 'object' &&
-        'type' in message &&
-        typeof message.type === 'string' &&
-        'payload' in message
-      )
+      message &&
+      typeof message === 'object' &&
+      'type' in message &&
+      typeof message.type === 'string' &&
+      message.type in ClientMessageValidatonFuncs &&
+      'payload' in message
     ) {
-      return false;
+      return true;
     }
-    const type =
-      ClientMessageTypes[message.type as keyof typeof ClientMessageTypes];
-    if (!type) return false;
-    return true;
+    return false;
   }
 
   isValidClientMessage(message: {
@@ -89,7 +83,7 @@ class Connection {
   onMessage(data: RawData, isBin: boolean) {
     if (isBin || !(data instanceof Buffer)) {
       this.send({
-        type: ServerMessageTypes.Error,
+        type: 'Error',
         payload: { text: 'Not supported message payload' },
       });
       return;
@@ -99,7 +93,7 @@ class Connection {
       message = JSON.parse(data.toString());
     } catch {
       this.send({
-        type: ServerMessageTypes.Error,
+        type: 'Error',
         payload: { text: 'Unable to parse message' },
       });
       return;
@@ -107,7 +101,7 @@ class Connection {
 
     if (!this.isExistingClientMessage(message)) {
       this.send({
-        type: ServerMessageTypes.Error,
+        type: 'Error',
         payload: { text: 'Not supported message type' },
       });
       return;
@@ -115,7 +109,7 @@ class Connection {
 
     if (!this.isValidClientMessage(message)) {
       this.send({
-        type: ServerMessageTypes.Error,
+        type: 'Error',
         payload: { text: 'Message data is wrong' },
       });
       return;
@@ -125,9 +119,9 @@ class Connection {
   }
 
   handleMessage(message: ClientMessage) {
-    if (message.type === ClientMessageTypes.CreateRoom) {
+    if (message.type === 'CreateRoom') {
       this.createRoom(message.payload);
-    } else if (message.type === ClientMessageTypes.JoinRoom) {
+    } else if (message.type === 'JoinRoom') {
       this.joinRoom(message.payload);
     }
   }
@@ -147,12 +141,12 @@ class Connection {
     } catch (e) {
       if (e instanceof RoomNotFoundError) {
         this.send({
-          type: ServerMessageTypes.Error,
+          type: 'Error',
           payload: { text: 'Room not found' },
         });
       } else if (e instanceof WrongRoomPasswordError) {
         this.send({
-          type: ServerMessageTypes.Error,
+          type: 'Error',
           payload: { text: 'Wrong room password' },
         });
       }

@@ -1,14 +1,6 @@
 import crypto from 'crypto';
 import { TypedEmitter } from 'tiny-typed-emitter';
-import { User } from './types';
-
-export type Room = {
-  id: string;
-  name: string;
-  password: string;
-  player1: User;
-  player2?: User;
-};
+import { Room, User } from './types';
 
 class Rooms extends TypedEmitter<{
   roomCreated: (room: Room) => void;

@@ -6,7 +6,7 @@ import { connections } from './connection';
 import config from './config';
 import { JSONSchemaType } from 'ajv';
 import { ajv } from './ajv-instance';
-import { userValidationFunc } from './types';
+import { userValidationFunc } from './schemas';
 
 export const startServer = () => {
   const server = http.createServer(requestHandler);

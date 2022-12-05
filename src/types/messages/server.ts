@@ -1,11 +1,19 @@
+import { Room, User } from '../other';
 import {
   KeysAsValues,
   MergeObjects,
   UnionFromObject,
   WrapValueWithPayloadObject,
   WrapValueWithTypeObject,
-} from '../../utils/types';
-import { ErrorMessage, RoomCreatedMessage, RoomJoinMessage } from './messages';
+} from '../utils';
+
+export type ErrorMessage = {
+  text: string;
+};
+
+export type RoomCreatedMessage = Room;
+
+export type RoomJoinMessage = { room: Room; user: User };
 
 export type ServerMessages = {
   Error: ErrorMessage;
@@ -13,15 +21,9 @@ export type ServerMessages = {
   RoomJoin: RoomJoinMessage;
 };
 
-export const ServerMessageTypes = {
-  Error: 'Error',
-  RoomCreated: 'RoomCreated',
-  RoomJoin: 'RoomJoin',
-} as const satisfies KeysAsValues<ServerMessages>;
-
 export type ServerMessage = UnionFromObject<
   MergeObjects<
     WrapValueWithPayloadObject<ServerMessages>,
-    WrapValueWithTypeObject<typeof ServerMessageTypes>
+    WrapValueWithTypeObject<KeysAsValues<ServerMessages>>
   >
 >;
