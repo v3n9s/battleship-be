@@ -6,6 +6,7 @@ import {
   ClientMessageTypes,
   ClientMessageValidatonFuncs,
   CreateRoomMessage,
+  ClientMessages,
 } from './messages';
 import { rooms } from './room';
 import { User } from './types';
@@ -73,7 +74,7 @@ class Connection {
   }
 
   isValidClientMessage(message: {
-    type: keyof typeof ClientMessageTypes;
+    type: keyof ClientMessages;
   }): message is ClientMessage {
     return ClientMessageValidatonFuncs[message.type](message);
   }
