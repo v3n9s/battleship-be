@@ -5,16 +5,18 @@ import {
   WrapValueWithPayloadObject,
   WrapValueWithTypeObject,
 } from '../../utils/types';
-import { ErrorMessage, RoomCreatedMessage } from './messages';
+import { ErrorMessage, RoomCreatedMessage, RoomJoinMessage } from './messages';
 
 export type ServerMessages = {
   Error: ErrorMessage;
   RoomCreated: RoomCreatedMessage;
+  RoomJoin: RoomJoinMessage;
 };
 
 export const ServerMessageTypes = {
   Error: 'Error',
   RoomCreated: 'RoomCreated',
+  RoomJoin: 'RoomJoin',
 } as const satisfies KeysAsValues<ServerMessages>;
 
 export type ServerMessage = UnionFromObject<

@@ -6,9 +6,10 @@ import {
   ClientMessageTypes,
   ClientMessageValidatonFuncs,
   CreateRoomMessage,
+  JoinRoomMessage,
   ClientMessages,
 } from './messages';
-import { rooms } from './room';
+import { RoomNotFoundError, rooms, WrongRoomPasswordError } from './room';
 import { User } from './types';
 
 class Connections {
@@ -18,6 +19,12 @@ class Connections {
     rooms.on('roomCreated', (room) => {
       this.connections.forEach((conn) => {
         conn.send({ type: ServerMessageTypes.RoomCreated, payload: room });
+      });
+    });
+
+    rooms.on('roomJoin', (payload) => {
+      this.connections.forEach((conn) => {
+        conn.send({ type: ServerMessageTypes.RoomJoin, payload });
       });
     });
   }
@@ -120,10 +127,35 @@ class Connection {
   handleMessage(message: ClientMessage) {
     if (message.type === ClientMessageTypes.CreateRoom) {
       this.createRoom(message.payload);
+    } else if (message.type === ClientMessageTypes.JoinRoom) {
+      this.joinRoom(message.payload);
     }
   }
 
   createRoom({ name, password }: CreateRoomMessage) {
     rooms.createRoom({ name, password, creator: this.session });
+  }
+
+  joinRoom(message: JoinRoomMessage) {
+    try {
+      rooms.joinRoom({
+        roomId: message.id,
+        roomPassword: message.password,
+        userId: this.session.id,
+        userName: this.session.name,
+      });
+    } catch (e) {
+      if (e instanceof RoomNotFoundError) {
+        this.send({
+          type: ServerMessageTypes.Error,
+          payload: { text: 'Room not found' },
+        });
+      } else if (e instanceof WrongRoomPasswordError) {
+        this.send({
+          type: ServerMessageTypes.Error,
+          payload: { text: 'Wrong room password' },
+        });
+      }
+    }
   }
 }

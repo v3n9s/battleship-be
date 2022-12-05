@@ -20,3 +20,24 @@ export const createRoomMessageSchema: JSONSchemaType<CreateRoomMessage> = {
   },
   required: ['name', 'password'],
 };
+
+export type JoinRoomMessage = {
+  id: string;
+  password: string;
+};
+
+export const joinRoomMessageSchema: JSONSchemaType<JoinRoomMessage> = {
+  type: 'object',
+  properties: {
+    id: {
+      type: 'string',
+      minLength: 36,
+      maxLength: 36,
+    },
+    password: {
+      type: 'string',
+      maxLength: 32,
+    },
+  },
+  required: ['id', 'password'],
+};

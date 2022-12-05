@@ -12,6 +12,7 @@ export type Room = {
 
 class Rooms extends TypedEmitter<{
   roomCreated: (room: Room) => void;
+  roomJoin: (args: { room: Room; user: User }) => void;
 }> {
   list: Room[] = [];
 
@@ -33,6 +34,32 @@ class Rooms extends TypedEmitter<{
     this.list.push(room);
     this.emit('roomCreated', room);
   }
+
+  joinRoom({
+    roomId,
+    roomPassword,
+    userId,
+    userName,
+  }: {
+    roomId: string;
+    roomPassword: string;
+    userId: string;
+    userName: string;
+  }) {
+    const room = this.list.find(({ id }) => id === roomId);
+    if (!room) {
+      throw new RoomNotFoundError();
+    }
+    if (room.password !== roomPassword) {
+      throw new WrongRoomPasswordError();
+    }
+    room.player2 = { id: userId, name: userName };
+    this.emit('roomJoin', { room, user: room.player2 });
+  }
 }
 
 export const rooms = new Rooms();
+
+export class RoomNotFoundError extends Error {}
+
+export class WrongRoomPasswordError extends Error {}
