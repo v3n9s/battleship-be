@@ -51,6 +51,8 @@ class Connection {
     this.socket = socket;
 
     this.socket.on('message', this.onMessage.bind(this));
+
+    this.send({ type: 'ExistingRooms', payload: rooms.list });
   }
 
   send(message: ServerMessage) {
