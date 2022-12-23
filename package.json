@@ -28,7 +28,7 @@
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.2.1",
     "fork-ts-checker-webpack-plugin": "^7.2.13",
-    "jsonwebtoken": "^8.5.1",
+    "jsonwebtoken": "^9.0.0",
     "nodemon-webpack-plugin": "^4.8.1",
     "prettier": "^2.8.0",
     "tiny-typed-emitter": "^2.1.0",
