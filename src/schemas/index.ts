@@ -4,6 +4,7 @@ import {
   ClientMessages,
   CreateRoomMessage,
   JoinRoomMessage,
+  LeaveRoomMessage,
   UserDto,
 } from '../types';
 
@@ -57,10 +58,23 @@ export const joinRoomMessageSchema: JSONSchemaType<JoinRoomMessage> = {
   required: ['id', 'password'],
 };
 
+export const leaveRoomMessageSchema: JSONSchemaType<LeaveRoomMessage> = {
+  type: 'object',
+  properties: {
+    id: {
+      type: 'string',
+      minLength: 36,
+      maxLength: 36,
+    },
+  },
+  required: ['id'],
+};
+
 export const ClientMessageValidatonFuncs = Object.fromEntries(
   Object.entries({
     CreateRoom: createRoomMessageSchema,
     JoinRoom: joinRoomMessageSchema,
+    LeaveRoom: leaveRoomMessageSchema,
   } satisfies {
     [K in keyof ClientMessages]: JSONSchemaType<ClientMessages[K]>;
   }).map(([k, v]) => [k, ajv.compile(v)]),
