@@ -7,7 +7,7 @@ import {
   CreateRoomMessage,
   JoinRoomMessage,
   ServerMessage,
-  User,
+  UserDto,
 } from './types';
 
 class Connections {
@@ -45,14 +45,17 @@ class Connection {
     return { id: this.id, name: this.name };
   }
 
-  constructor({ session, socket }: { session: User; socket: WebSocket }) {
+  constructor({ session, socket }: { session: UserDto; socket: WebSocket }) {
     this.id = session.id;
     this.name = session.name;
     this.socket = socket;
 
     this.socket.on('message', this.onMessage.bind(this));
 
-    this.send({ type: 'ExistingRooms', payload: rooms.list });
+    this.send({
+      type: 'ExistingRooms',
+      payload: rooms.list.map((r) => r.toDto()),
+    });
   }
 
   send(message: ServerMessage) {

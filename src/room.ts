@@ -1,10 +1,10 @@
 import crypto from 'crypto';
 import { TypedEmitter } from 'tiny-typed-emitter';
-import { Room, User } from './types';
+import { RoomDto, RoomCreatedMessage, RoomJoinMessage, UserDto } from './types';
 
 class Rooms extends TypedEmitter<{
-  roomCreated: (room: Room) => void;
-  roomJoin: (args: { room: Room; user: User }) => void;
+  roomCreated: (room: RoomCreatedMessage) => void;
+  roomJoin: (args: RoomJoinMessage) => void;
 }> {
   list: Room[] = [];
 
@@ -15,16 +15,15 @@ class Rooms extends TypedEmitter<{
   }: {
     name: string;
     password: string;
-    creator: User;
+    creator: UserDto;
   }) {
-    const room = {
-      id: crypto.randomUUID(),
+    const room = new Room({
       name,
       password,
       player1: creator,
-    };
+    });
     this.list.push(room);
-    this.emit('roomCreated', room);
+    this.emit('roomCreated', room.toDto());
   }
 
   joinRoom({
@@ -46,11 +45,46 @@ class Rooms extends TypedEmitter<{
       throw new WrongRoomPasswordError();
     }
     room.player2 = { id: userId, name: userName };
-    this.emit('roomJoin', { room, user: room.player2 });
+    this.emit('roomJoin', { roomId: room.id, user: room.player2 });
   }
 }
 
 export const rooms = new Rooms();
+
+class Room {
+  id = crypto.randomUUID();
+
+  name: string;
+
+  password: string;
+
+  player1: UserDto;
+
+  player2?: UserDto;
+
+  constructor({
+    name,
+    password,
+    player1,
+  }: {
+    name: string;
+    password: string;
+    player1: UserDto;
+  }) {
+    this.name = name;
+    this.password = password;
+    this.player1 = player1;
+  }
+
+  toDto(): RoomDto {
+    return {
+      id: this.id,
+      name: this.name,
+      player1: this.player1,
+      player2: this.player2,
+    };
+  }
+}
 
 export class RoomNotFoundError extends Error {}
 

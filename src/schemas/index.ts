@@ -4,10 +4,10 @@ import {
   ClientMessages,
   CreateRoomMessage,
   JoinRoomMessage,
-  User,
+  UserDto,
 } from '../types';
 
-export const userSchema: JSONSchemaType<User> = {
+export const userSchema: JSONSchemaType<UserDto> = {
   type: 'object',
   properties: {
     id: {
