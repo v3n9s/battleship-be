@@ -12,6 +12,7 @@ import {
   ClientMessages,
   CreateRoomMessage,
   JoinRoomMessage,
+  LeaveRoomMessage,
   ServerMessage,
   ServerMessages,
   UserDto,
@@ -138,6 +139,8 @@ class Connection {
       this.createRoom(message.payload);
     } else if (message.type === 'JoinRoom') {
       this.joinRoom(message.payload);
+    } else if (message.type === 'LeaveRoom') {
+      this.leaveRoom(message.payload);
     }
   }
 
@@ -176,6 +179,19 @@ class Connection {
         this.send({
           type: 'Error',
           payload: { text: 'User already in room' },
+        });
+      }
+    }
+  }
+
+  leaveRoom(message: LeaveRoomMessage) {
+    try {
+      rooms.leaveRoom({ roomId: message.id, user: this.session });
+    } catch (e) {
+      if (e instanceof RoomNotFoundError) {
+        this.send({
+          type: 'Error',
+          payload: { text: 'Room not found' },
         });
       }
     }
