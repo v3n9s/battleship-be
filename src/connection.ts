@@ -1,5 +1,11 @@
 import { RawData, WebSocket } from 'ws';
-import { RoomNotFoundError, rooms, WrongRoomPasswordError } from './room';
+import {
+  RoomNotFoundError,
+  rooms,
+  UserAlreadyInOtherRoomError,
+  UserAlreadyInRoomError,
+  WrongRoomPasswordError,
+} from './room';
 import { ClientMessageValidatonFuncs } from './schemas';
 import {
   ClientMessage,
@@ -7,6 +13,7 @@ import {
   CreateRoomMessage,
   JoinRoomMessage,
   ServerMessage,
+  ServerMessages,
   UserDto,
 } from './types';
 
@@ -14,21 +21,25 @@ class Connections {
   connections: Connection[] = [];
 
   constructor() {
-    rooms.on('roomCreated', (room) => {
-      this.connections.forEach((conn) => {
-        conn.send({ type: 'RoomCreated', payload: room });
-      });
-    });
+    rooms.on('roomCreated', this.sendArgAsPayloadToEveryone('RoomCreated'));
 
-    rooms.on('roomJoin', (payload) => {
-      this.connections.forEach((conn) => {
-        conn.send({ type: 'RoomJoin', payload });
-      });
-    });
+    rooms.on('roomJoin', this.sendArgAsPayloadToEveryone('RoomJoin'));
+
+    rooms.on('roomLeave', this.sendArgAsPayloadToEveryone('RoomLeave'));
+
+    rooms.on('roomDelete', this.sendArgAsPayloadToEveryone('RoomDelete'));
   }
 
   handle(...args: ConstructorParameters<typeof Connection>) {
     this.connections.push(new Connection(...args));
+  }
+
+  sendArgAsPayloadToEveryone<T extends keyof ServerMessages>(type: T) {
+    return (payload: ServerMessages[T]) => {
+      this.connections.forEach((conn) => {
+        conn.send({ type, payload } as ServerMessage);
+      });
+    };
   }
 }
 
@@ -131,7 +142,16 @@ class Connection {
   }
 
   createRoom({ name, password }: CreateRoomMessage) {
-    rooms.createRoom({ name, password, creator: this.session });
+    try {
+      rooms.createRoom({ name, password, creator: this.session });
+    } catch (e) {
+      if (e instanceof UserAlreadyInOtherRoomError) {
+        this.send({
+          type: 'Error',
+          payload: { text: 'User already in other room' },
+        });
+      }
+    }
   }
 
   joinRoom(message: JoinRoomMessage) {
@@ -139,8 +159,7 @@ class Connection {
       rooms.joinRoom({
         roomId: message.id,
         roomPassword: message.password,
-        userId: this.session.id,
-        userName: this.session.name,
+        user: this.session,
       });
     } catch (e) {
       if (e instanceof RoomNotFoundError) {
@@ -152,6 +171,11 @@ class Connection {
         this.send({
           type: 'Error',
           payload: { text: 'Wrong room password' },
+        });
+      } else if (e instanceof UserAlreadyInRoomError) {
+        this.send({
+          type: 'Error',
+          payload: { text: 'User already in room' },
         });
       }
     }

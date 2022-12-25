@@ -1,10 +1,19 @@
 import crypto from 'crypto';
 import { TypedEmitter } from 'tiny-typed-emitter';
-import { RoomDto, RoomCreatedMessage, RoomJoinMessage, UserDto } from './types';
+import {
+  RoomDto,
+  RoomCreatedMessage,
+  RoomJoinMessage,
+  UserDto,
+  RoomDeleteMessage,
+  RoomLeaveMessage,
+} from './types';
 
 class Rooms extends TypedEmitter<{
-  roomCreated: (room: RoomCreatedMessage) => void;
+  roomCreated: (args: RoomCreatedMessage) => void;
   roomJoin: (args: RoomJoinMessage) => void;
+  roomLeave: (args: RoomLeaveMessage) => void;
+  roomDelete: (args: RoomDeleteMessage) => void;
 }> {
   list: Room[] = [];
 
@@ -17,41 +26,69 @@ class Rooms extends TypedEmitter<{
     password: string;
     creator: UserDto;
   }) {
+    if (
+      this.list.some(
+        (r) => creator.id === r.player1.id || creator.id === r.player2?.id,
+      )
+    ) {
+      throw new UserAlreadyInOtherRoomError();
+    }
     const room = new Room({
       name,
       password,
       player1: creator,
     });
+    room.on('join', (user) => {
+      this.emit('roomJoin', { roomId: room.id, user });
+    });
+    room.on('leave', (user) => {
+      this.emit('roomLeave', { roomId: room.id, userId: user.id });
+    });
+    room.on('destroy', () => {
+      this.remove(room);
+      this.emit('roomDelete', { roomId: room.id });
+    });
     this.list.push(room);
     this.emit('roomCreated', room.toDto());
+  }
+
+  remove(room: Room) {
+    this.list = this.list.filter((r) => r.id !== room.id);
+    room.removeAllListeners();
   }
 
   joinRoom({
     roomId,
     roomPassword,
-    userId,
-    userName,
+    user,
   }: {
     roomId: string;
     roomPassword: string;
-    userId: string;
-    userName: string;
+    user: UserDto;
   }) {
     const room = this.list.find(({ id }) => id === roomId);
     if (!room) {
       throw new RoomNotFoundError();
     }
-    if (room.password !== roomPassword) {
-      throw new WrongRoomPasswordError();
+    room.join({ password: roomPassword, user });
+  }
+
+  leaveRoom({ roomId, user }: { roomId: string; user: UserDto }) {
+    const room = this.list.find(({ id }) => id === roomId);
+    if (!room) {
+      throw new RoomNotFoundError();
     }
-    room.player2 = { id: userId, name: userName };
-    this.emit('roomJoin', { roomId: room.id, user: room.player2 });
+    room.leave(user);
   }
 }
 
 export const rooms = new Rooms();
 
-class Room {
+class Room extends TypedEmitter<{
+  join: (user: UserDto) => void;
+  leave: (user: UserDto) => void;
+  destroy: () => void;
+}> {
   id = crypto.randomUUID();
 
   name: string;
@@ -71,9 +108,30 @@ class Room {
     password: string;
     player1: UserDto;
   }) {
+    super();
     this.name = name;
     this.password = password;
     this.player1 = player1;
+  }
+
+  join({ password, user }: { password: string; user: UserDto }) {
+    if (this.password !== password) {
+      throw new WrongRoomPasswordError();
+    }
+    if (this.player1.id === user.id) {
+      throw new UserAlreadyInRoomError();
+    }
+    this.player2 = { id: user.id, name: user.name };
+    this.emit('join', this.player2);
+  }
+
+  leave(user: UserDto) {
+    if (user.id === this.player1.id) {
+      this.emit('destroy');
+    } else if (user.id === this.player2?.id) {
+      delete this.player2;
+      this.emit('leave', user);
+    }
   }
 
   toDto(): RoomDto {
@@ -89,3 +147,7 @@ class Room {
 export class RoomNotFoundError extends Error {}
 
 export class WrongRoomPasswordError extends Error {}
+
+export class UserAlreadyInRoomError extends Error {}
+
+export class UserAlreadyInOtherRoomError extends Error {}
