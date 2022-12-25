@@ -70,7 +70,16 @@ class Rooms extends TypedEmitter<{
     if (!room) {
       throw new RoomNotFoundError();
     }
-    room.join({ password: roomPassword, user });
+    const roomUserAlreadyIn = this.list.find(
+      ({ player1, player2 }) =>
+        user.id === player1.id || user.id === player2?.id,
+    );
+    if (roomUserAlreadyIn !== room) {
+      if (roomUserAlreadyIn) {
+        roomUserAlreadyIn.leave(user);
+      }
+      room.join({ password: roomPassword, user });
+    }
   }
 
   leaveRoom({ roomId, user }: { roomId: string; user: UserDto }) {
@@ -138,6 +147,7 @@ class Room extends TypedEmitter<{
     return {
       id: this.id,
       name: this.name,
+      hasPassword: !!this.password,
       player1: this.player1,
       player2: this.player2,
     };
