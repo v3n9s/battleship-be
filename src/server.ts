@@ -7,6 +7,7 @@ import config from './config';
 import { JSONSchemaType } from 'ajv';
 import { ajv } from './ajv-instance';
 import { userValidationFunc } from './schemas';
+import { UserData } from './types';
 
 export const startServer = () => {
   const server = http.createServer(requestHandler);
@@ -50,7 +51,16 @@ const createTokenHandler: http.RequestListener = (req, res) => {
     res.end();
     return;
   }
-  res.write(JSON.stringify({ token: getToken(name) }));
+  const user = {
+    id: crypto.randomUUID(),
+    name,
+  };
+  res.write(
+    JSON.stringify({
+      token: jwt.sign(user, config.jwtSecret),
+      user,
+    } satisfies UserData),
+  );
   res.end();
 };
 
@@ -66,9 +76,6 @@ const isValidTokenSignature = (token: string) => {
     return false;
   }
 };
-
-const getToken = (name: string) =>
-  jwt.sign({ id: crypto.randomUUID(), name }, config.jwtSecret);
 
 const userNameSchema: JSONSchemaType<string> = {
   type: 'string',
