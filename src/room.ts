@@ -1,5 +1,6 @@
 import crypto from 'crypto';
 import { TypedEmitter } from 'tiny-typed-emitter';
+import { Game } from './game';
 import {
   RoomDto,
   RoomCreatedMessage,
@@ -96,6 +97,7 @@ export const rooms = new Rooms();
 class Room extends TypedEmitter<{
   join: (user: UserDto) => void;
   leave: (user: UserDto) => void;
+  gameStart: (game: Game) => void;
   destroy: () => void;
 }> {
   id = crypto.randomUUID();
@@ -106,7 +108,13 @@ class Room extends TypedEmitter<{
 
   player1: UserDto;
 
+  player1Ready = false;
+
   player2?: UserDto;
+
+  player2Ready = false;
+
+  game?: Game;
 
   constructor({
     name,
@@ -141,6 +149,23 @@ class Room extends TypedEmitter<{
       delete this.player2;
       this.emit('leave', user);
     }
+  }
+
+  ready(user: UserDto) {
+    if (user.id === this.player1.id) {
+      this.player1Ready = true;
+    } else if (user.id === this.player2?.id) {
+      this.player2Ready = true;
+    }
+  }
+
+  start() {
+    if (!this.player2 || !this.player1Ready || !this.player2Ready) {
+      return;
+    }
+
+    this.game = new Game({ player1: this.player1, player2: this.player2 });
+    this.emit('gameStart', this.game);
   }
 
   toDto(): RoomDto {
