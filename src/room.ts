@@ -8,6 +8,8 @@ import {
   UserDto,
   RoomDeleteMessage,
   RoomLeaveMessage,
+  RoomReadyMessage,
+  GameReadyMessage,
 } from './types';
 
 class Rooms extends TypedEmitter<{
@@ -15,6 +17,8 @@ class Rooms extends TypedEmitter<{
   roomJoin: (args: RoomJoinMessage) => void;
   roomLeave: (args: RoomLeaveMessage) => void;
   roomDelete: (args: RoomDeleteMessage) => void;
+  roomReady: (args: RoomReadyMessage) => void;
+  gameReady: (args: GameReadyMessage) => void;
 }> {
   list: Room[] = [];
 

@@ -27,6 +27,10 @@ class Connections {
     rooms.on('roomLeave', this.sendArgAsPayloadToEveryone('RoomLeave'));
 
     rooms.on('roomDelete', this.sendArgAsPayloadToEveryone('RoomDelete'));
+
+    rooms.on('roomReady', this.sendArgAsPayloadToEveryone('RoomReady'));
+
+    rooms.on('gameReady', this.sendArgAsPayloadToEveryone('GameReady'));
   }
 
   handle(...args: ConstructorParameters<typeof Connection>) {
