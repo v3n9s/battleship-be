@@ -1,4 +1,5 @@
 import { RawData, WebSocket } from 'ws';
+import { Field } from './game';
 import {
   RoomNotFoundError,
   rooms,
@@ -13,8 +14,11 @@ import {
   CreateRoomMessage,
   JoinRoomMessage,
   LeaveRoomMessage,
+  ReadyGameMessage,
+  ReadyRoomMessage,
   ServerMessage,
   ServerMessages,
+  SetPositionsMessage,
   UserDto,
 } from './types';
 
@@ -141,6 +145,12 @@ class Connection {
       this.joinRoom(message.payload);
     } else if (message.type === 'LeaveRoom') {
       this.leaveRoom(message.payload);
+    } else if (message.type === 'ReadyRoom') {
+      this.readyRoom(message.payload);
+    } else if (message.type === 'SetPositions') {
+      this.setPositions(message.payload);
+    } else if (message.type === 'ReadyGame') {
+      this.readyGame(message.payload);
     }
   }
 
@@ -195,5 +205,21 @@ class Connection {
         });
       }
     }
+  }
+
+  readyRoom(message: ReadyRoomMessage) {
+    rooms.readyRoom({ roomId: message.roomId, user: this.session });
+  }
+
+  setPositions(message: SetPositionsMessage) {
+    rooms.setPositions({
+      roomId: message.roomId,
+      positions: new Field({ field: message.positions }),
+      user: this.session,
+    });
+  }
+
+  readyGame(message: ReadyGameMessage) {
+    rooms.readyGame({ roomId: message.roomId, user: this.session });
   }
 }

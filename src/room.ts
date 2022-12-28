@@ -1,6 +1,6 @@
 import crypto from 'crypto';
 import { TypedEmitter } from 'tiny-typed-emitter';
-import { Game } from './game';
+import { Field, Game } from './game';
 import {
   RoomDto,
   RoomCreatedMessage,
@@ -17,6 +17,14 @@ class Rooms extends TypedEmitter<{
   roomDelete: (args: RoomDeleteMessage) => void;
 }> {
   list: Room[] = [];
+
+  findRoom(roomId: string) {
+    const room = this.list.find(({ id }) => id === roomId);
+    if (!room) {
+      throw new RoomNotFoundError();
+    }
+    return room;
+  }
 
   createRoom({
     name,
@@ -67,10 +75,7 @@ class Rooms extends TypedEmitter<{
     roomPassword: string;
     user: UserDto;
   }) {
-    const room = this.list.find(({ id }) => id === roomId);
-    if (!room) {
-      throw new RoomNotFoundError();
-    }
+    const room = this.findRoom(roomId);
     const roomUserAlreadyIn = this.list.find(
       ({ player1, player2 }) =>
         user.id === player1.id || user.id === player2?.id,
@@ -84,11 +89,27 @@ class Rooms extends TypedEmitter<{
   }
 
   leaveRoom({ roomId, user }: { roomId: string; user: UserDto }) {
-    const room = this.list.find(({ id }) => id === roomId);
-    if (!room) {
-      throw new RoomNotFoundError();
-    }
-    room.leave(user);
+    this.findRoom(roomId).leave(user);
+  }
+
+  readyRoom({ roomId, user }: { roomId: string; user: UserDto }) {
+    this.findRoom(roomId).ready(user);
+  }
+
+  setPositions({
+    roomId,
+    user,
+    positions,
+  }: {
+    roomId: string;
+    user: UserDto;
+    positions: Field;
+  }) {
+    this.findRoom(roomId).game?.setPositions({ user, positions });
+  }
+
+  readyGame({ roomId, user }: { roomId: string; user: UserDto }) {
+    this.findRoom(roomId).game?.ready(user);
   }
 }
 
