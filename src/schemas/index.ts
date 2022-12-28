@@ -24,6 +24,8 @@ export const nameSchema: JSONSchemaType<string> = {
   maxLength: 32,
 };
 
+export const nameValidationFunc = ajv.compile(nameSchema);
+
 export const passwordSchema: JSONSchemaType<string> = {
   type: 'string',
   maxLength: 32,

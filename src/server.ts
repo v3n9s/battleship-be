@@ -4,9 +4,7 @@ import jwt from 'jsonwebtoken';
 import { WebSocketServer } from 'ws';
 import { connections } from './connection';
 import config from './config';
-import { JSONSchemaType } from 'ajv';
-import { ajv } from './ajv-instance';
-import { userValidationFunc } from './schemas';
+import { nameValidationFunc, userValidationFunc } from './schemas';
 import { UserData } from './types';
 
 export const startServer = () => {
@@ -46,7 +44,7 @@ const requestHandler: http.RequestListener = (req, res) => {
 
 const createTokenHandler: http.RequestListener = (req, res) => {
   const name = urlSearchParamsFrom(req.url).get('name');
-  if (!userNameValidationFunc(name)) {
+  if (!nameValidationFunc(name)) {
     res.writeHead(400);
     res.end();
     return;
@@ -76,11 +74,3 @@ const isValidTokenSignature = (token: string) => {
     return false;
   }
 };
-
-const userNameSchema: JSONSchemaType<string> = {
-  type: 'string',
-  minLength: 1,
-  maxLength: 32,
-};
-
-const userNameValidationFunc = ajv.compile(userNameSchema);
