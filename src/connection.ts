@@ -11,14 +11,8 @@ import { ClientMessageValidatonFuncs } from './schemas';
 import {
   ClientMessage,
   ClientMessages,
-  CreateRoomMessage,
-  JoinRoomMessage,
-  LeaveRoomMessage,
-  ReadyGameMessage,
-  ReadyRoomMessage,
   ServerMessage,
   ServerMessages,
-  SetPositionsMessage,
   UserDto,
 } from './types';
 
@@ -135,45 +129,8 @@ class Connection {
       return;
     }
 
-    this.handleMessage(message);
-  }
-
-  handleMessage(message: ClientMessage) {
-    if (message.type === 'CreateRoom') {
-      this.createRoom(message.payload);
-    } else if (message.type === 'JoinRoom') {
-      this.joinRoom(message.payload);
-    } else if (message.type === 'LeaveRoom') {
-      this.leaveRoom(message.payload);
-    } else if (message.type === 'ReadyRoom') {
-      this.readyRoom(message.payload);
-    } else if (message.type === 'SetPositions') {
-      this.setPositions(message.payload);
-    } else if (message.type === 'ReadyGame') {
-      this.readyGame(message.payload);
-    }
-  }
-
-  createRoom({ name, password }: CreateRoomMessage) {
     try {
-      rooms.createRoom({ name, password, creator: this.session });
-    } catch (e) {
-      if (e instanceof UserAlreadyInOtherRoomError) {
-        this.send({
-          type: 'Error',
-          payload: { text: 'User already in other room' },
-        });
-      }
-    }
-  }
-
-  joinRoom(message: JoinRoomMessage) {
-    try {
-      rooms.joinRoom({
-        roomId: message.id,
-        roomPassword: message.password,
-        user: this.session,
-      });
+      this.handleMessage(message);
     } catch (e) {
       if (e instanceof RoomNotFoundError) {
         this.send({
@@ -190,36 +147,40 @@ class Connection {
           type: 'Error',
           payload: { text: 'User already in room' },
         });
-      }
-    }
-  }
-
-  leaveRoom(message: LeaveRoomMessage) {
-    try {
-      rooms.leaveRoom({ roomId: message.id, user: this.session });
-    } catch (e) {
-      if (e instanceof RoomNotFoundError) {
+      } else if (e instanceof UserAlreadyInOtherRoomError) {
         this.send({
           type: 'Error',
-          payload: { text: 'Room not found' },
+          payload: { text: 'User already in other room' },
         });
       }
     }
   }
 
-  readyRoom(message: ReadyRoomMessage) {
-    rooms.readyRoom({ roomId: message.roomId, user: this.session });
-  }
-
-  setPositions(message: SetPositionsMessage) {
-    rooms.setPositions({
-      roomId: message.roomId,
-      positions: new Field({ field: message.positions }),
-      user: this.session,
-    });
-  }
-
-  readyGame(message: ReadyGameMessage) {
-    rooms.readyGame({ roomId: message.roomId, user: this.session });
+  handleMessage({ type, payload }: ClientMessage) {
+    if (type === 'CreateRoom') {
+      rooms.createRoom({
+        name: payload.name,
+        password: payload.name,
+        creator: this.session,
+      });
+    } else if (type === 'JoinRoom') {
+      rooms.joinRoom({
+        roomId: payload.id,
+        roomPassword: payload.password,
+        user: this.session,
+      });
+    } else if (type === 'LeaveRoom') {
+      rooms.leaveRoom({ roomId: payload.id, user: this.session });
+    } else if (type === 'ReadyRoom') {
+      rooms.readyRoom({ roomId: payload.roomId, user: this.session });
+    } else if (type === 'SetPositions') {
+      rooms.setPositions({
+        roomId: payload.roomId,
+        positions: new Field({ field: payload.positions }),
+        user: this.session,
+      });
+    } else if (type === 'ReadyGame') {
+      rooms.readyGame({ roomId: payload.roomId, user: this.session });
+    }
   }
 }
