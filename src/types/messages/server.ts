@@ -2,7 +2,7 @@ import { RoomDto, UserDto } from '../other';
 import {
   KeysAsValues,
   MergeObjects,
-  UnionFromObject,
+  ObjectToUnion,
   WrapValueWithPayloadObject,
   WrapValueWithTypeObject,
 } from '../utils';
@@ -36,7 +36,7 @@ export type ServerMessages = {
   ExistingRooms: ExistingRoomsMessage;
 };
 
-export type ServerMessage = UnionFromObject<
+export type ServerMessage = ObjectToUnion<
   MergeObjects<
     WrapValueWithPayloadObject<ServerMessages>,
     WrapValueWithTypeObject<KeysAsValues<ServerMessages>>

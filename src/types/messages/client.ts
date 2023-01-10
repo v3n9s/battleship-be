@@ -2,7 +2,7 @@ import { FieldDto } from '../other';
 import {
   KeysAsValues,
   MergeObjects,
-  UnionFromObject,
+  ObjectToUnion,
   WrapValueWithPayloadObject,
   WrapValueWithTypeObject,
 } from '../utils';
@@ -43,7 +43,7 @@ export type ClientMessages = {
   ReadyGame: ReadyGameMessage;
 };
 
-export type ClientMessage = UnionFromObject<
+export type ClientMessage = ObjectToUnion<
   MergeObjects<
     WrapValueWithPayloadObject<ClientMessages>,
     WrapValueWithTypeObject<KeysAsValues<ClientMessages>>

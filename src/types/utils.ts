@@ -18,7 +18,4 @@ export type MergeObjects<T extends object, U extends object> = {
   [K in keyof T & keyof U]: T[K] & U[K];
 };
 
-export type UnionFromObject<
-  T extends object,
-  K extends keyof T = keyof T,
-> = T[K];
+export type ObjectToUnion<T extends object> = T[keyof T];
