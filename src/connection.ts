@@ -1,5 +1,4 @@
 import { RawData, WebSocket } from 'ws';
-import { Field } from './game';
 import {
   RoomNotFoundError,
   rooms,
@@ -7,6 +6,7 @@ import {
   UserAlreadyInRoomError,
   WrongRoomPasswordError,
 } from './room';
+import { Handler, handlers } from './handlers';
 import { ClientMessageValidatonFuncs } from './schemas';
 import {
   ClientMessage,
@@ -134,7 +134,10 @@ class Connection {
     }
 
     try {
-      this.handleMessage(message);
+      (handlers[message.type] as Handler)({
+        user: this.session,
+        payload: message.payload,
+      });
     } catch (e) {
       if (e instanceof RoomNotFoundError) {
         this.send({
@@ -157,34 +160,6 @@ class Connection {
           payload: { text: 'User already in other room' },
         });
       }
-    }
-  }
-
-  handleMessage({ type, payload }: ClientMessage) {
-    if (type === 'CreateRoom') {
-      rooms.createRoom({
-        name: payload.name,
-        password: payload.name,
-        creator: this.session,
-      });
-    } else if (type === 'JoinRoom') {
-      rooms.joinRoom({
-        roomId: payload.id,
-        roomPassword: payload.password,
-        user: this.session,
-      });
-    } else if (type === 'LeaveRoom') {
-      rooms.leaveRoom({ roomId: payload.id, user: this.session });
-    } else if (type === 'ReadyRoom') {
-      rooms.readyRoom({ roomId: payload.roomId, user: this.session });
-    } else if (type === 'SetPositions') {
-      rooms.setPositions({
-        roomId: payload.roomId,
-        positions: new Field({ field: payload.positions }),
-        user: this.session,
-      });
-    } else if (type === 'ReadyGame') {
-      rooms.readyGame({ roomId: payload.roomId, user: this.session });
     }
   }
 }
