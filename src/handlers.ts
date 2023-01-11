@@ -9,11 +9,11 @@ export const handlers = {
   CreateRoom: ({ user, payload: { name, password } }) => {
     store.createRoom({ name, password, user });
   },
-  JoinRoom: ({ user, payload: { id, password } }) => {
-    store.getRoom(id).join({ password, user });
+  JoinRoom: ({ user, payload: { roomId, password } }) => {
+    store.getRoom(roomId).join({ password, user });
   },
-  LeaveRoom: ({ user, payload: { id } }) => {
-    store.getRoom(id).leave(user.id);
+  LeaveRoom: ({ user, payload: { roomId } }) => {
+    store.getRoom(roomId).leave(user.id);
   },
   ReadyRoom: ({ user, payload: { roomId } }) => {
     store.getRoom(roomId).ready(user.id);

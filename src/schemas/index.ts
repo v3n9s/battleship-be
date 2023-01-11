@@ -68,18 +68,18 @@ export const createRoomMessageSchema: JSONSchemaType<CreateRoomMessage> = {
 export const joinRoomMessageSchema: JSONSchemaType<JoinRoomMessage> = {
   type: 'object',
   properties: {
-    id: idSchema,
+    roomId: idSchema,
     password: passwordSchema,
   },
-  required: ['id', 'password'],
+  required: ['roomId', 'password'],
 };
 
 export const leaveRoomMessageSchema: JSONSchemaType<LeaveRoomMessage> = {
   type: 'object',
   properties: {
-    id: idSchema,
+    roomId: idSchema,
   },
-  required: ['id'],
+  required: ['roomId'],
 };
 
 export const readyRoomMessageSchema: JSONSchemaType<ReadyRoomMessage> = {

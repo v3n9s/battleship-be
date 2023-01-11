@@ -13,12 +13,12 @@ export type CreateRoomMessage = {
 };
 
 export type JoinRoomMessage = {
-  id: string;
+  roomId: string;
   password: string;
 };
 
 export type LeaveRoomMessage = {
-  id: string;
+  roomId: string;
 };
 
 export type ReadyRoomMessage = {
