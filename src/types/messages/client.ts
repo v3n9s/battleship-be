@@ -1,4 +1,4 @@
-import { FieldDto } from '../other';
+import { Field } from '../other';
 import {
   KeysAsValues,
   MergeObjects,
@@ -27,7 +27,7 @@ export type ReadyRoomMessage = {
 
 export type SetPositionsMessage = {
   roomId: string;
-  positions: FieldDto;
+  positions: Field;
 };
 
 export type ReadyGameMessage = {

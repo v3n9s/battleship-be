@@ -1,11 +1,11 @@
 import crypto from 'crypto';
 import { TypedEmitter } from 'tiny-typed-emitter';
 import { Game } from './game';
-import { RoomDto, UserDto } from './types';
+import { Room as RoomDto, User } from './types';
 
 export class Room extends TypedEmitter<{
-  join: (user: UserDto) => void;
-  leave: (user: UserDto) => void;
+  join: (user: User) => void;
+  leave: (user: User) => void;
   gameCreated: (game: Game) => void;
   delete: () => void;
 }> {
@@ -15,11 +15,11 @@ export class Room extends TypedEmitter<{
 
   private password: string;
 
-  private player1: UserDto;
+  private player1: User;
 
   private player1Ready = false;
 
-  private player2?: UserDto;
+  private player2?: User;
 
   private player2Ready = false;
 
@@ -32,7 +32,7 @@ export class Room extends TypedEmitter<{
   }: {
     name: string;
     password: string;
-    player1: UserDto;
+    player1: User;
   }) {
     super();
     this.id = crypto.randomUUID();
@@ -41,7 +41,7 @@ export class Room extends TypedEmitter<{
     this.player1 = player1;
   }
 
-  join({ password, user }: { password: string; user: UserDto }) {
+  join({ password, user }: { password: string; user: User }) {
     if (this.password !== password) {
       throw new WrongRoomPasswordError();
     }

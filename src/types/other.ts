@@ -1,24 +1,24 @@
-export type UserDto = {
+export type User = {
   id: string;
   name: string;
 };
 
-export type RoomDto = {
+export type Room = {
   id: string;
   name: string;
   hasPassword: boolean;
-  player1: UserDto;
-  player2?: UserDto | undefined;
+  player1: User;
+  player2?: User | undefined;
 };
 
-export type GameDto = {
-  player1: { user: UserDto; attacks: FieldDto };
-  player2: { user: UserDto; attacks: FieldDto };
+export type Game = {
+  player1: { user: User; attacks: Field };
+  player2: { user: User; attacks: Field };
 };
 
-export type FieldDto = boolean[][];
+export type Field = boolean[][];
 
 export type UserData = {
   token: string;
-  user: UserDto;
+  user: User;
 };

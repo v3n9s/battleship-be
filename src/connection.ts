@@ -6,7 +6,7 @@ import {
   ClientMessages,
   ServerMessage,
   ServerMessages,
-  UserDto,
+  User,
 } from './types';
 import { RoomNotFoundError, store } from './store';
 import {
@@ -59,7 +59,7 @@ class Connection {
     return { id: this.id, name: this.name };
   }
 
-  constructor({ session, socket }: { session: UserDto; socket: WebSocket }) {
+  constructor({ session, socket }: { session: User; socket: WebSocket }) {
     this.id = session.id;
     this.name = session.name;
     this.socket = socket;

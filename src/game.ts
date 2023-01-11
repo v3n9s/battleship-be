@@ -1,8 +1,8 @@
 import { TypedEmitter } from 'tiny-typed-emitter';
-import { FieldDto, GameDto, UserDto } from './types';
+import { Field as FieldDto, Game as GameDto, User } from './types';
 
 type Player = {
-  user: UserDto;
+  user: User;
   isReady: boolean;
   positions: Field;
   attacks: Field;
@@ -21,7 +21,7 @@ export class Game extends TypedEmitter<{
 
   state: GameState = 'Positioning';
 
-  constructor({ player1, player2 }: { player1: UserDto; player2: UserDto }) {
+  constructor({ player1, player2 }: { player1: User; player2: User }) {
     super();
     this.player1 = {
       user: player1,

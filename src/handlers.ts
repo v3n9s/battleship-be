@@ -1,9 +1,9 @@
 import { store } from './store';
-import { ClientMessages, ObjectToUnion, UserDto } from './types';
+import { ClientMessages, ObjectToUnion, User } from './types';
 
 export type Handler<
   P extends ObjectToUnion<ClientMessages> = ObjectToUnion<ClientMessages>,
-> = (args: { user: UserDto; payload: P }) => void;
+> = (args: { user: User; payload: P }) => void;
 
 export const handlers = {
   CreateRoom: ({ user, payload: { name, password } }) => {

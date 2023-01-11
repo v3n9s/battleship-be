@@ -3,13 +3,13 @@ import { ajv } from '../ajv-instance';
 import {
   ClientMessages,
   CreateRoomMessage,
-  FieldDto,
+  Field,
   JoinRoomMessage,
   LeaveRoomMessage,
   ReadyGameMessage,
   ReadyRoomMessage,
   SetPositionsMessage,
-  UserDto,
+  User,
 } from '../types';
 
 export const idSchema: JSONSchemaType<string> = {
@@ -31,7 +31,7 @@ export const passwordSchema: JSONSchemaType<string> = {
   maxLength: 32,
 };
 
-export const userSchema: JSONSchemaType<UserDto> = {
+export const userSchema: JSONSchemaType<User> = {
   type: 'object',
   properties: {
     id: idSchema,
@@ -42,7 +42,7 @@ export const userSchema: JSONSchemaType<UserDto> = {
 
 export const userValidationFunc = ajv.compile(userSchema);
 
-export const fieldDtoSchema: JSONSchemaType<FieldDto> = {
+export const fieldSchema: JSONSchemaType<Field> = {
   type: 'array',
   minItems: 10,
   maxItems: 10,
@@ -94,7 +94,7 @@ export const setPositionsMessageSchema: JSONSchemaType<SetPositionsMessage> = {
   type: 'object',
   properties: {
     roomId: idSchema,
-    positions: fieldDtoSchema,
+    positions: fieldSchema,
   },
   required: ['roomId', 'positions'],
 };
