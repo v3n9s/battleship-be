@@ -1,11 +1,4 @@
 import { RawData, WebSocket } from 'ws';
-import {
-  RoomNotFoundError,
-  rooms,
-  UserAlreadyInOtherRoomError,
-  UserAlreadyInRoomError,
-  WrongRoomPasswordError,
-} from './room';
 import { Handler, handlers } from './handlers';
 import { ClientMessageValidatonFuncs } from './schemas';
 import {
@@ -15,22 +8,29 @@ import {
   ServerMessages,
   UserDto,
 } from './types';
+import { RoomNotFoundError, store } from './store';
+import {
+  GameNotStartedYet,
+  UserAlreadyInOtherRoomError,
+  UserAlreadyInRoomError,
+  WrongRoomPasswordError,
+} from './room';
 
 class Connections {
   connections: Connection[] = [];
 
   constructor() {
-    rooms.on('roomCreated', this.sendArgAsPayloadToEveryone('RoomCreated'));
+    store.on('roomCreated', this.sendArgAsPayloadToEveryone('RoomCreated'));
 
-    rooms.on('roomJoin', this.sendArgAsPayloadToEveryone('RoomJoin'));
+    store.on('roomJoin', this.sendArgAsPayloadToEveryone('RoomJoin'));
 
-    rooms.on('roomLeave', this.sendArgAsPayloadToEveryone('RoomLeave'));
+    store.on('roomLeave', this.sendArgAsPayloadToEveryone('RoomLeave'));
 
-    rooms.on('roomDelete', this.sendArgAsPayloadToEveryone('RoomDelete'));
+    store.on('roomDelete', this.sendArgAsPayloadToEveryone('RoomDelete'));
 
-    rooms.on('roomReady', this.sendArgAsPayloadToEveryone('RoomReady'));
+    store.on('roomReady', this.sendArgAsPayloadToEveryone('RoomReady'));
 
-    rooms.on('gameReady', this.sendArgAsPayloadToEveryone('GameReady'));
+    store.on('gameReady', this.sendArgAsPayloadToEveryone('GameReady'));
   }
 
   handle(...args: ConstructorParameters<typeof Connection>) {
@@ -68,7 +68,7 @@ class Connection {
 
     this.send({
       type: 'ExistingRooms',
-      payload: rooms.list.map((r) => r.toDto()),
+      payload: store.getRooms().map((r) => r.toDto()),
     });
   }
 
@@ -158,6 +158,11 @@ class Connection {
         this.send({
           type: 'Error',
           payload: { text: 'User already in other room' },
+        });
+      } else if (e instanceof GameNotStartedYet) {
+        this.send({
+          type: 'Error',
+          payload: { text: 'Game not started yet' },
         });
       }
     }

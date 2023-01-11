@@ -1,145 +1,29 @@
 import crypto from 'crypto';
 import { TypedEmitter } from 'tiny-typed-emitter';
-import { Field, Game } from './game';
-import {
-  RoomDto,
-  RoomCreatedMessage,
-  RoomJoinMessage,
-  UserDto,
-  RoomDeleteMessage,
-  RoomLeaveMessage,
-  RoomReadyMessage,
-  GameReadyMessage,
-} from './types';
+import { Game } from './game';
+import { RoomDto, UserDto } from './types';
 
-class Rooms extends TypedEmitter<{
-  roomCreated: (args: RoomCreatedMessage) => void;
-  roomJoin: (args: RoomJoinMessage) => void;
-  roomLeave: (args: RoomLeaveMessage) => void;
-  roomDelete: (args: RoomDeleteMessage) => void;
-  roomReady: (args: RoomReadyMessage) => void;
-  gameReady: (args: GameReadyMessage) => void;
-}> {
-  list: Room[] = [];
-
-  findRoom(roomId: string) {
-    const room = this.list.find(({ id }) => id === roomId);
-    if (!room) {
-      throw new RoomNotFoundError();
-    }
-    return room;
-  }
-
-  createRoom({
-    name,
-    password,
-    creator,
-  }: {
-    name: string;
-    password: string;
-    creator: UserDto;
-  }) {
-    if (
-      this.list.some(
-        (r) => creator.id === r.player1.id || creator.id === r.player2?.id,
-      )
-    ) {
-      throw new UserAlreadyInOtherRoomError();
-    }
-    const room = new Room({
-      name,
-      password,
-      player1: creator,
-    });
-    room.on('join', (user) => {
-      this.emit('roomJoin', { roomId: room.id, user });
-    });
-    room.on('leave', (user) => {
-      this.emit('roomLeave', { roomId: room.id, userId: user.id });
-    });
-    room.on('destroy', () => {
-      this.remove(room);
-      this.emit('roomDelete', { roomId: room.id });
-    });
-    this.list.push(room);
-    this.emit('roomCreated', room.toDto());
-  }
-
-  remove(room: Room) {
-    this.list = this.list.filter((r) => r.id !== room.id);
-    room.removeAllListeners();
-  }
-
-  joinRoom({
-    roomId,
-    roomPassword,
-    user,
-  }: {
-    roomId: string;
-    roomPassword: string;
-    user: UserDto;
-  }) {
-    const room = this.findRoom(roomId);
-    const roomUserAlreadyIn = this.list.find(
-      ({ player1, player2 }) =>
-        user.id === player1.id || user.id === player2?.id,
-    );
-    if (roomUserAlreadyIn !== room) {
-      if (roomUserAlreadyIn) {
-        roomUserAlreadyIn.leave(user);
-      }
-      room.join({ password: roomPassword, user });
-    }
-  }
-
-  leaveRoom({ roomId, user }: { roomId: string; user: UserDto }) {
-    this.findRoom(roomId).leave(user);
-  }
-
-  readyRoom({ roomId, user }: { roomId: string; user: UserDto }) {
-    this.findRoom(roomId).ready(user);
-  }
-
-  setPositions({
-    roomId,
-    user,
-    positions,
-  }: {
-    roomId: string;
-    user: UserDto;
-    positions: Field;
-  }) {
-    this.findRoom(roomId).game?.setPositions({ user, positions });
-  }
-
-  readyGame({ roomId, user }: { roomId: string; user: UserDto }) {
-    this.findRoom(roomId).game?.ready(user);
-  }
-}
-
-export const rooms = new Rooms();
-
-class Room extends TypedEmitter<{
+export class Room extends TypedEmitter<{
   join: (user: UserDto) => void;
   leave: (user: UserDto) => void;
-  gameStart: (game: Game) => void;
-  destroy: () => void;
+  gameCreated: (game: Game) => void;
+  delete: () => void;
 }> {
-  id = crypto.randomUUID();
+  id: string;
 
-  name: string;
+  private name: string;
 
-  password: string;
+  private password: string;
 
-  player1: UserDto;
+  private player1: UserDto;
 
-  player1Ready = false;
+  private player1Ready = false;
 
-  player2?: UserDto;
+  private player2?: UserDto;
 
-  player2Ready = false;
+  private player2Ready = false;
 
-  game?: Game;
+  private game?: Game;
 
   constructor({
     name,
@@ -151,6 +35,7 @@ class Room extends TypedEmitter<{
     player1: UserDto;
   }) {
     super();
+    this.id = crypto.randomUUID();
     this.name = name;
     this.password = password;
     this.player1 = player1;
@@ -167,30 +52,37 @@ class Room extends TypedEmitter<{
     this.emit('join', this.player2);
   }
 
-  leave(user: UserDto) {
-    if (user.id === this.player1.id) {
-      this.emit('destroy');
-    } else if (user.id === this.player2?.id) {
+  leave(userId: string) {
+    if (userId === this.player1.id) {
+      this.emit('delete');
+    } else if (userId === this.player2?.id) {
+      this.emit('leave', this.player2);
       delete this.player2;
-      this.emit('leave', user);
     }
   }
 
-  ready(user: UserDto) {
-    if (user.id === this.player1.id) {
+  ready(userId: string) {
+    if (userId === this.player1.id) {
       this.player1Ready = true;
-    } else if (user.id === this.player2?.id) {
+    } else if (userId === this.player2?.id) {
       this.player2Ready = true;
     }
   }
 
-  start() {
+  createGame() {
     if (!this.player2 || !this.player1Ready || !this.player2Ready) {
       return;
     }
 
-    this.game = new Game({ player1: this.player1, player2: this.player2 });
-    this.emit('gameStart', this.game);
+    const game = new Game({ player1: this.player1, player2: this.player2 });
+    this.emit('gameCreated', game);
+  }
+
+  getGame() {
+    if (!this.game) {
+      throw new GameNotStartedYet();
+    }
+    return this.game;
   }
 
   toDto(): RoomDto {
@@ -204,10 +96,10 @@ class Room extends TypedEmitter<{
   }
 }
 
-export class RoomNotFoundError extends Error {}
-
 export class WrongRoomPasswordError extends Error {}
 
 export class UserAlreadyInRoomError extends Error {}
 
 export class UserAlreadyInOtherRoomError extends Error {}
+
+export class GameNotStartedYet extends Error {}

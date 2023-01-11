@@ -37,20 +37,20 @@ export class Game extends TypedEmitter<{
     };
   }
 
-  setPositions({ user, positions }: { user: UserDto; positions: Field }) {
+  setPositions({ userId, positions }: { userId: string; positions: FieldDto }) {
     if (this.state !== 'Positioning') return;
 
-    if (user.id === this.player1.user.id) {
-      this.player1.positions = positions;
-    } else if (user.id === this.player2.user.id) {
-      this.player2.positions = positions;
+    if (userId === this.player1.user.id) {
+      this.player1.positions = new Field({ field: positions });
+    } else if (userId === this.player2.user.id) {
+      this.player2.positions = new Field({ field: positions });
     }
   }
 
-  ready(user: UserDto) {
-    if (user.id === this.player1.user.id) {
+  ready(userId: string) {
+    if (userId === this.player1.user.id) {
       this.player1.isReady = true;
-    } else if (user.id === this.player2.user.id) {
+    } else if (userId === this.player2.user.id) {
       this.player2.isReady = true;
     }
   }
@@ -76,7 +76,7 @@ export class Game extends TypedEmitter<{
   }
 }
 
-export class Field {
+class Field {
   field: boolean[][];
 
   constructor({
@@ -86,19 +86,14 @@ export class Field {
   }
 
   at(x: number, y: number) {
-    const cell = this.field[x]?.[y];
-    if (typeof cell !== 'boolean') {
-      throw new Error('Could not get value outside of range');
-    }
-    return cell;
+    return !!this.field[x]?.[y];
   }
 
   set(x: number, y: number, value: boolean) {
     const col = this.field[x];
-    if (!col || typeof col[y] !== 'boolean') {
-      throw new Error('Could not set value outside of range');
+    if (col && y in col) {
+      col[y] = value;
     }
-    col[y] = value;
   }
 
   toDto(): FieldDto {

@@ -1,5 +1,4 @@
-import { Field } from './game';
-import { rooms } from './room';
+import { store } from './store';
 import { ClientMessages, ObjectToUnion, UserDto } from './types';
 
 export type Handler<
@@ -7,35 +6,26 @@ export type Handler<
 > = (args: { user: UserDto; payload: P }) => void;
 
 export const handlers = {
-  CreateRoom: ({ user, payload }) => {
-    rooms.createRoom({
-      name: payload.name,
-      password: payload.name,
-      creator: user,
-    });
+  CreateRoom: ({ user, payload: { name, password } }) => {
+    store.createRoom({ name, password, user });
   },
-  JoinRoom: ({ user, payload }) => {
-    rooms.joinRoom({
-      roomId: payload.id,
-      roomPassword: payload.password,
-      user,
-    });
+  JoinRoom: ({ user, payload: { id, password } }) => {
+    store.getRoom(id).join({ password, user });
   },
-  LeaveRoom: ({ user, payload }) => {
-    rooms.leaveRoom({ roomId: payload.id, user });
+  LeaveRoom: ({ user, payload: { id } }) => {
+    store.getRoom(id).leave(user.id);
   },
-  ReadyGame: ({ user, payload }) => {
-    rooms.readyGame({ roomId: payload.roomId, user });
+  ReadyRoom: ({ user, payload: { roomId } }) => {
+    store.getRoom(roomId).ready(user.id);
   },
-  ReadyRoom: ({ user, payload }) => {
-    rooms.readyRoom({ roomId: payload.roomId, user });
+  ReadyGame: ({ user, payload: { roomId } }) => {
+    store.getRoom(roomId).ready(user.id);
   },
-  SetPositions: ({ user, payload }) => {
-    rooms.setPositions({
-      roomId: payload.roomId,
-      positions: new Field({ field: payload.positions }),
-      user,
-    });
+  SetPositions: ({ user, payload: { roomId, positions } }) => {
+    store
+      .getRoom(roomId)
+      .getGame()
+      .setPositions({ userId: user.id, positions });
   },
 } satisfies {
   [K in keyof ClientMessages]: Handler<ClientMessages[K]>;
