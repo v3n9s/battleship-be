@@ -41,9 +41,9 @@ export class Game extends TypedEmitter<{
     if (this.state !== 'Positioning') return;
 
     if (userId === this.player1.user.id) {
-      this.player1.positions = new Field({ field: positions });
+      this.player1.positions = new Field(positions);
     } else if (userId === this.player2.user.id) {
-      this.player2.positions = new Field({ field: positions });
+      this.player2.positions = new Field(positions);
     }
   }
 
@@ -79,9 +79,9 @@ export class Game extends TypedEmitter<{
 class Field {
   field: boolean[][];
 
-  constructor({
+  constructor(
     field = new Array(10).fill(new Array(10).fill(false)) as boolean[][],
-  } = {}) {
+  ) {
     this.field = field;
   }
 
