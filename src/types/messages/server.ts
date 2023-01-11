@@ -13,15 +13,29 @@ export type ErrorMessage = {
 
 export type RoomCreatedMessage = Omit<Room, 'player2'>;
 
-export type RoomJoinMessage = { roomId: string; user: User };
+export type RoomJoinMessage = {
+  roomId: string;
+  user: User;
+};
 
-export type RoomLeaveMessage = { roomId: string; userId: string };
+export type RoomLeaveMessage = {
+  roomId: string;
+  userId: string;
+};
 
-export type RoomDeleteMessage = { roomId: string };
+export type RoomDeleteMessage = {
+  roomId: string;
+};
 
-export type RoomReadyMessage = { roomId: string; userId: string };
+export type RoomReadyMessage = {
+  roomId: string;
+  userId: string;
+};
 
-export type GameReadyMessage = { roomId: string; userId: string };
+export type GameReadyMessage = {
+  roomId: string;
+  userId: string;
+};
 
 export type ExistingRoomsMessage = Room[];
 
