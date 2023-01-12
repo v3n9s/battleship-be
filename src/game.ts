@@ -4,7 +4,7 @@ import { Field as FieldDto, Game as GameDto, User } from './types';
 type Player = {
   user: User;
   isReady: boolean;
-  positions: Field;
+  positions: Field | null;
   attacks: Field;
 };
 
@@ -31,13 +31,13 @@ export class Game extends TypedEmitter<{
       user: player1,
       isReady: false,
       attacks: new Field(),
-      positions: new Field(),
+      positions: null,
     };
     this.player2 = {
       user: player2,
       isReady: false,
       attacks: new Field(),
-      positions: new Field(),
+      positions: null,
     };
   }
 
@@ -73,9 +73,9 @@ export class Game extends TypedEmitter<{
   }
 
   ready(userId: string) {
-    if (userId === this.player1.user.id) {
+    if (userId === this.player1.user.id && this.player1.positions) {
       this.player1.isReady = true;
-    } else if (userId === this.player2.user.id) {
+    } else if (userId === this.player2.user.id && this.player2.positions) {
       this.player2.isReady = true;
     }
   }
