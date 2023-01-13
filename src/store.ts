@@ -1,14 +1,22 @@
 import { TypedEmitter } from 'tiny-typed-emitter';
 import { Room } from './room';
-import * as types from './types';
+import {
+  GameReadyMessage,
+  RoomCreatedMessage,
+  RoomDeleteMessage,
+  RoomJoinMessage,
+  RoomLeaveMessage,
+  RoomReadyMessage,
+  User,
+} from './types';
 
 class Store extends TypedEmitter<{
-  roomCreated: (args: types.RoomCreatedMessage) => void;
-  roomJoin: (args: types.RoomJoinMessage) => void;
-  roomLeave: (args: types.RoomLeaveMessage) => void;
-  roomDelete: (args: types.RoomDeleteMessage) => void;
-  roomReady: (args: types.RoomReadyMessage) => void;
-  gameReady: (args: types.GameReadyMessage) => void;
+  roomCreated: (args: RoomCreatedMessage) => void;
+  roomJoin: (args: RoomJoinMessage) => void;
+  roomLeave: (args: RoomLeaveMessage) => void;
+  roomDelete: (args: RoomDeleteMessage) => void;
+  roomReady: (args: RoomReadyMessage) => void;
+  gameReady: (args: GameReadyMessage) => void;
 }> {
   private rooms: Room[] = [];
 
@@ -19,7 +27,7 @@ class Store extends TypedEmitter<{
   }: {
     name: string;
     password: string;
-    user: types.User;
+    user: User;
   }) {
     const room = new Room({
       name,
