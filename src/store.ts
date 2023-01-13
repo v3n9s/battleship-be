@@ -51,6 +51,9 @@ class Store extends TypedEmitter<{
     room.on('gameCreate', () => {
       this.emit('gameCreate', { roomId: room.id });
     });
+    room.on('gameReady', (userId) => {
+      this.emit('gameReady', { roomId: room.id, userId });
+    });
     room.on('gameStart', () => {
       this.emit('gameStart', { roomId: room.id });
     });

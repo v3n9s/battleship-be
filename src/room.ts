@@ -7,6 +7,7 @@ export class Room extends TypedEmitter<{
   join: (user: User) => void;
   leave: (user: User) => void;
   gameCreate: () => void;
+  gameReady: (userId: string) => void;
   gameStart: () => void;
   delete: () => void;
 }> {
@@ -65,8 +66,10 @@ export class Room extends TypedEmitter<{
   ready(userId: string) {
     if (userId === this.player1.id) {
       this.player1Ready = true;
+      this.emit('gameReady', userId);
     } else if (userId === this.player2?.id) {
       this.player2Ready = true;
+      this.emit('gameReady', userId);
     }
   }
 
