@@ -30,6 +30,9 @@ export const handlers = {
       .getGame()
       .setPositions({ userId: user.id, positions });
   },
+  StartGame: ({ payload: { roomId } }) => {
+    store.getRoom(roomId).getGame().start();
+  },
 } satisfies {
   [K in keyof ClientMessages]: Handler<ClientMessages[K]>;
 };

@@ -38,6 +38,10 @@ export type ReadyGameMessage = {
   roomId: string;
 };
 
+export type StartGameMessage = {
+  roomId: string;
+};
+
 export type ClientMessages = {
   CreateRoom: CreateRoomMessage;
   JoinRoom: JoinRoomMessage;
@@ -46,6 +50,7 @@ export type ClientMessages = {
   SetPositions: SetPositionsMessage;
   CreateGame: CreateGameMessage;
   ReadyGame: ReadyGameMessage;
+  StartGame: StartGameMessage;
 };
 
 export type ClientMessage = ObjectToUnion<

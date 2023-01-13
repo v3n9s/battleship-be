@@ -7,6 +7,7 @@ export class Room extends TypedEmitter<{
   join: (user: User) => void;
   leave: (user: User) => void;
   gameCreate: () => void;
+  gameStart: () => void;
   delete: () => void;
 }> {
   id: string;
@@ -75,6 +76,9 @@ export class Room extends TypedEmitter<{
     }
 
     this.game = new Game({ player1: this.player1, player2: this.player2 });
+    this.game.on('start', () => {
+      this.emit('gameStart');
+    });
     this.emit('gameCreate');
   }
 

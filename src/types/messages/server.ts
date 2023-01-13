@@ -41,6 +41,10 @@ export type GameReadyMessage = {
   userId: string;
 };
 
+export type GameStartMessage = {
+  roomId: string;
+};
+
 export type ExistingRoomsMessage = Room[];
 
 export type ServerMessages = {
@@ -52,6 +56,7 @@ export type ServerMessages = {
   RoomReady: RoomReadyMessage;
   GameCreate: GameCreateMessage;
   GameReady: GameReadyMessage;
+  GameStart: GameStartMessage;
   ExistingRooms: ExistingRoomsMessage;
 };
 

@@ -11,6 +11,7 @@ import {
   SetPositionsMessage,
   CreateGameMessage,
   User,
+  StartGameMessage,
 } from '../types';
 
 export const idSchema: JSONSchemaType<string> = {
@@ -116,6 +117,14 @@ export const readyGameMessageSchema: JSONSchemaType<ReadyGameMessage> = {
   required: ['roomId'],
 };
 
+export const startGameMessageSchema: JSONSchemaType<StartGameMessage> = {
+  type: 'object',
+  properties: {
+    roomId: idSchema,
+  },
+  required: ['roomId'],
+};
+
 export const ClientMessageValidatonFuncs = Object.fromEntries(
   Object.entries({
     CreateRoom: createRoomMessageSchema,
@@ -125,6 +134,7 @@ export const ClientMessageValidatonFuncs = Object.fromEntries(
     SetPositions: setPositionsMessageSchema,
     CreateGame: createGameMessageSchema,
     ReadyGame: readyGameMessageSchema,
+    StartGame: startGameMessageSchema,
   } satisfies {
     [K in keyof ClientMessages]: JSONSchemaType<ClientMessages[K]>;
   }).map(([k, v]) => [k, ajv.compile(v)]),

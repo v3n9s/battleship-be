@@ -9,6 +9,7 @@ import {
   RoomLeaveMessage,
   RoomReadyMessage,
   User,
+  GameStartMessage,
 } from './types';
 
 class Store extends TypedEmitter<{
@@ -19,6 +20,7 @@ class Store extends TypedEmitter<{
   roomReady: (args: RoomReadyMessage) => void;
   gameCreate: (args: GameCreateMessage) => void;
   gameReady: (args: GameReadyMessage) => void;
+  gameStart: (args: GameStartMessage) => void;
 }> {
   private rooms: Room[] = [];
 
@@ -48,6 +50,9 @@ class Store extends TypedEmitter<{
     });
     room.on('gameCreate', () => {
       this.emit('gameCreate', { roomId: room.id });
+    });
+    room.on('gameStart', () => {
+      this.emit('gameStart', { roomId: room.id });
     });
     this.rooms.push(room);
     this.emit('roomCreated', room.toDto());
