@@ -30,7 +30,11 @@ class Connections {
 
     store.on('roomReady', this.sendArgAsPayloadToEveryone('RoomReady'));
 
+    store.on('gameCreate', this.sendArgAsPayloadToEveryone('GameCreate'));
+
     store.on('gameReady', this.sendArgAsPayloadToEveryone('GameReady'));
+
+    store.on('gameStart', this.sendArgAsPayloadToEveryone('GameStart'));
   }
 
   handle(...args: ConstructorParameters<typeof Connection>) {
