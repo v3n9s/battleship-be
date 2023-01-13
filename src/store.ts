@@ -2,6 +2,7 @@ import { TypedEmitter } from 'tiny-typed-emitter';
 import { Room } from './room';
 import {
   GameReadyMessage,
+  GameCreateMessage,
   RoomCreatedMessage,
   RoomDeleteMessage,
   RoomJoinMessage,
@@ -16,6 +17,7 @@ class Store extends TypedEmitter<{
   roomLeave: (args: RoomLeaveMessage) => void;
   roomDelete: (args: RoomDeleteMessage) => void;
   roomReady: (args: RoomReadyMessage) => void;
+  gameCreate: (args: GameCreateMessage) => void;
   gameReady: (args: GameReadyMessage) => void;
 }> {
   private rooms: Room[] = [];
@@ -43,6 +45,9 @@ class Store extends TypedEmitter<{
     room.on('delete', () => {
       this.rooms = this.rooms.filter(({ id }) => id === room.id);
       this.emit('roomDelete', { roomId: room.id });
+    });
+    room.on('gameCreate', () => {
+      this.emit('gameCreate', { roomId: room.id });
     });
     this.rooms.push(room);
     this.emit('roomCreated', room.toDto());

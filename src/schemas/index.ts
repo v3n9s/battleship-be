@@ -9,6 +9,7 @@ import {
   ReadyGameMessage,
   ReadyRoomMessage,
   SetPositionsMessage,
+  CreateGameMessage,
   User,
 } from '../types';
 
@@ -99,6 +100,14 @@ export const setPositionsMessageSchema: JSONSchemaType<SetPositionsMessage> = {
   required: ['roomId', 'positions'],
 };
 
+export const createGameMessageSchema: JSONSchemaType<CreateGameMessage> = {
+  type: 'object',
+  properties: {
+    roomId: idSchema,
+  },
+  required: ['roomId'],
+};
+
 export const readyGameMessageSchema: JSONSchemaType<ReadyGameMessage> = {
   type: 'object',
   properties: {
@@ -114,6 +123,7 @@ export const ClientMessageValidatonFuncs = Object.fromEntries(
     LeaveRoom: leaveRoomMessageSchema,
     ReadyRoom: readyRoomMessageSchema,
     SetPositions: setPositionsMessageSchema,
+    CreateGame: createGameMessageSchema,
     ReadyGame: readyGameMessageSchema,
   } satisfies {
     [K in keyof ClientMessages]: JSONSchemaType<ClientMessages[K]>;

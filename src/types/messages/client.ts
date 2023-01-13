@@ -30,6 +30,10 @@ export type SetPositionsMessage = {
   positions: Field;
 };
 
+export type CreateGameMessage = {
+  roomId: string;
+};
+
 export type ReadyGameMessage = {
   roomId: string;
 };
@@ -40,6 +44,7 @@ export type ClientMessages = {
   LeaveRoom: LeaveRoomMessage;
   ReadyRoom: ReadyRoomMessage;
   SetPositions: SetPositionsMessage;
+  CreateGame: CreateGameMessage;
   ReadyGame: ReadyGameMessage;
 };
 

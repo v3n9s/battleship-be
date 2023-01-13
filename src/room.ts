@@ -6,7 +6,7 @@ import { Room as RoomDto, User } from './types';
 export class Room extends TypedEmitter<{
   join: (user: User) => void;
   leave: (user: User) => void;
-  gameCreated: (game: Game) => void;
+  gameCreate: () => void;
   delete: () => void;
 }> {
   id: string;
@@ -74,8 +74,8 @@ export class Room extends TypedEmitter<{
       return;
     }
 
-    const game = new Game({ player1: this.player1, player2: this.player2 });
-    this.emit('gameCreated', game);
+    this.game = new Game({ player1: this.player1, player2: this.player2 });
+    this.emit('gameCreate');
   }
 
   getGame() {

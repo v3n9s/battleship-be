@@ -18,6 +18,9 @@ export const handlers = {
   ReadyRoom: ({ user, payload: { roomId } }) => {
     store.getRoom(roomId).ready(user.id);
   },
+  CreateGame: ({ payload: { roomId } }) => {
+    store.getRoom(roomId).createGame();
+  },
   ReadyGame: ({ user, payload: { roomId } }) => {
     store.getRoom(roomId).getGame().ready(user.id);
   },
