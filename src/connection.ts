@@ -19,7 +19,7 @@ class Connections {
   connections: Connection[] = [];
 
   constructor() {
-    store.on('roomCreated', this.sendArgAsPayloadToEveryone('RoomCreated'));
+    store.on('roomCreate', this.sendArgAsPayloadToEveryone('RoomCreate'));
 
     store.on('roomJoin', this.sendArgAsPayloadToEveryone('RoomJoin'));
 
@@ -27,7 +27,23 @@ class Connections {
 
     store.on('roomDelete', this.sendArgAsPayloadToEveryone('RoomDelete'));
 
-    store.on('roomReady', this.sendArgAsPayloadToEveryone('RoomReady'));
+    store.on(
+      'roomReadyToPosition',
+      this.sendArgAsPayloadToEveryone('RoomReadyToPosition'),
+    );
+
+    store.on(
+      'roomReadyToPlay',
+      this.sendArgAsPayloadToEveryone('RoomReadyToPlay'),
+    );
+
+    store.on('gameStart', this.sendArgAsPayloadToEveryone('GameStart'));
+
+    store.on('gameHit', this.sendArgAsPayloadToEveryone('GameHit'));
+
+    store.on('gameMiss', this.sendArgAsPayloadToEveryone('GameMiss'));
+
+    store.on('gameEnd', this.sendArgAsPayloadToEveryone('GameEnd'));
   }
 
   handle(...args: ConstructorParameters<typeof Connection>) {

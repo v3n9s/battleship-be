@@ -12,7 +12,10 @@ type Player = User & {
 
 export class Room extends TypedEmitter<{
   join: (user: User) => void;
-  leave: (user: User) => void;
+  readyToPosition: (userId: string) => void;
+  readyToPlay: (userId: string) => void;
+  gameStart: (game: Game) => void;
+  leave: (userId: string) => void;
   delete: () => void;
 }> {
   id: string;
@@ -67,7 +70,7 @@ export class Room extends TypedEmitter<{
     if (userId === this.player1.id) {
       this.emit('delete');
     } else if (userId === this.player2?.id) {
-      this.emit('leave', this.player2);
+      this.emit('leave', this.player2.id);
       delete this.player2;
     }
   }
@@ -75,16 +78,20 @@ export class Room extends TypedEmitter<{
   readyToPosition(userId: string) {
     if (userId === this.player1.id) {
       this.player1.readyToPosition = true;
+      this.emit('readyToPosition', userId);
     } else if (userId === this.player2?.id) {
       this.player2.readyToPosition = true;
+      this.emit('readyToPosition', userId);
     }
   }
 
   readyToPlay(userId: string) {
     if (userId === this.player1.id && this.player1.positions) {
       this.player1.readyToPlay = true;
+      this.emit('readyToPlay', userId);
     } else if (userId === this.player2?.id && this.player2?.positions) {
       this.player2.readyToPlay = true;
+      this.emit('readyToPlay', userId);
     }
   }
 
@@ -112,6 +119,7 @@ export class Room extends TypedEmitter<{
         attacks: new Field(),
       },
     });
+    this.emit('gameStart', this.game);
   }
 
   getGame() {

@@ -11,7 +11,7 @@ export type ErrorMessage = {
   text: string;
 };
 
-export type RoomCreatedMessage = Omit<Room, 'player2'>;
+export type RoomCreateMessage = Omit<Room, 'player2'>;
 
 export type RoomJoinMessage = {
   roomId: string;
@@ -27,16 +27,12 @@ export type RoomDeleteMessage = {
   roomId: string;
 };
 
-export type RoomReadyMessage = {
+export type RoomReadyToPositionMessage = {
   roomId: string;
   userId: string;
 };
 
-export type GameCreateMessage = {
-  roomId: string;
-};
-
-export type GameReadyMessage = {
+export type RoomReadyToPlayMessage = {
   roomId: string;
   userId: string;
 };
@@ -45,18 +41,36 @@ export type GameStartMessage = {
   roomId: string;
 };
 
+export type GameHitMessage = {
+  roomId: string;
+  userId: string;
+  position: [number, number];
+};
+
+export type GameMissMessage = {
+  roomId: string;
+  userId: string;
+  position: [number, number];
+};
+
+export type GameEndMessage = {
+  winner: User;
+};
+
 export type ExistingRoomsMessage = Room[];
 
 export type ServerMessages = {
   Error: ErrorMessage;
-  RoomCreated: RoomCreatedMessage;
+  RoomCreate: RoomCreateMessage;
   RoomJoin: RoomJoinMessage;
   RoomLeave: RoomLeaveMessage;
   RoomDelete: RoomDeleteMessage;
-  RoomReady: RoomReadyMessage;
-  GameCreate: GameCreateMessage;
-  GameReady: GameReadyMessage;
+  RoomReadyToPosition: RoomReadyToPositionMessage;
+  RoomReadyToPlay: RoomReadyToPlayMessage;
   GameStart: GameStartMessage;
+  GameHit: GameHitMessage;
+  GameMiss: GameMissMessage;
+  GameEnd: GameEndMessage;
   ExistingRooms: ExistingRoomsMessage;
 };
 
