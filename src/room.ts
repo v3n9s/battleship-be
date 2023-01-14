@@ -1,31 +1,28 @@
 import crypto from 'crypto';
 import { TypedEmitter } from 'tiny-typed-emitter';
-import { Game } from './game';
-import { Room as RoomDto, User } from './types';
+import { Field, ShipsField } from './field';
+import { Room as RoomDto, Field as FieldDto, User } from './types';
+
+type Player = User & {
+  readyToPosition: boolean;
+  readyToPlay: boolean;
+  positions: Field | null;
+};
 
 export class Room extends TypedEmitter<{
   join: (user: User) => void;
   leave: (user: User) => void;
-  gameCreate: () => void;
-  gameReady: (userId: string) => void;
-  gameStart: () => void;
   delete: () => void;
 }> {
   id: string;
 
+  private player1: Player;
+
+  private player2?: Player;
+
   private name: string;
 
   private password: string;
-
-  private player1: User;
-
-  private player1Ready = false;
-
-  private player2?: User;
-
-  private player2Ready = false;
-
-  private game?: Game;
 
   constructor({
     name,
@@ -40,7 +37,16 @@ export class Room extends TypedEmitter<{
     this.id = crypto.randomUUID();
     this.name = name;
     this.password = password;
-    this.player1 = player1;
+    this.player1 = this.createPlayer(player1);
+  }
+
+  private createPlayer(user: User) {
+    return {
+      ...user,
+      readyToPosition: false,
+      readyToPlay: false,
+      positions: null,
+    };
   }
 
   join({ password, user }: { password: string; user: User }) {
@@ -50,7 +56,7 @@ export class Room extends TypedEmitter<{
     if (this.player1.id === user.id) {
       throw new UserAlreadyInRoomError();
     }
-    this.player2 = { id: user.id, name: user.name };
+    this.player2 = this.createPlayer(user);
     this.emit('join', this.player2);
   }
 
@@ -63,33 +69,55 @@ export class Room extends TypedEmitter<{
     }
   }
 
-  ready(userId: string) {
+  readyToPosition(userId: string) {
     if (userId === this.player1.id) {
-      this.player1Ready = true;
-      this.emit('gameReady', userId);
+      this.player1.readyToPosition = true;
     } else if (userId === this.player2?.id) {
-      this.player2Ready = true;
-      this.emit('gameReady', userId);
+      this.player2.readyToPosition = true;
+    }
+  }
+
+  readyToPlay(userId: string) {
+    if (userId === this.player1.id && this.player1.positions) {
+      this.player1.readyToPlay = true;
+    } else if (userId === this.player2?.id && this.player2?.positions) {
+      this.player2.readyToPlay = true;
     }
   }
 
   createGame() {
-    if (!this.player2 || !this.player1Ready || !this.player2Ready) {
+    if (!this.player1.readyToPlay || !this.player2?.readyToPlay) {
       return;
     }
-
-    this.game = new Game({ player1: this.player1, player2: this.player2 });
-    this.game.on('start', () => {
-      this.emit('gameStart');
-    });
-    this.emit('gameCreate');
   }
 
-  getGame() {
-    if (!this.game) {
-      throw new GameNotStartedYet();
+  isValidField(field: Field) {
+    const shipsField = new ShipsField(field);
+    try {
+      const ships = shipsField.getShips().map(({ length }) => length);
+      return (
+        ships.every((v) => [1, 2, 3, 4].includes(v)) &&
+        ships.filter((v) => v === 1).length === 4 &&
+        ships.filter((v) => v === 2).length === 3 &&
+        ships.filter((v) => v === 3).length === 2 &&
+        ships.filter((v) => v === 4).length === 1
+      );
+    } catch {
+      return false;
     }
-    return this.game;
+  }
+
+  setPositions({ userId, positions }: { userId: string; positions: FieldDto }) {
+    const field = new Field(positions);
+    if (!this.isValidField(field)) {
+      throw new InvalidFieldError();
+    }
+
+    if (userId === this.player1.id) {
+      this.player1.positions = field;
+    } else if (userId === this.player2?.id) {
+      this.player2.positions = field;
+    }
   }
 
   toDto(): RoomDto {
@@ -109,4 +137,4 @@ export class UserAlreadyInRoomError extends Error {}
 
 export class UserAlreadyInOtherRoomError extends Error {}
 
-export class GameNotStartedYet extends Error {}
+export class InvalidFieldError extends Error {}

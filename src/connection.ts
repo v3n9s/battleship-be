@@ -10,7 +10,6 @@ import {
 } from './types';
 import { RoomNotFoundError, store } from './store';
 import {
-  GameNotStartedYet,
   UserAlreadyInOtherRoomError,
   UserAlreadyInRoomError,
   WrongRoomPasswordError,
@@ -29,12 +28,6 @@ class Connections {
     store.on('roomDelete', this.sendArgAsPayloadToEveryone('RoomDelete'));
 
     store.on('roomReady', this.sendArgAsPayloadToEveryone('RoomReady'));
-
-    store.on('gameCreate', this.sendArgAsPayloadToEveryone('GameCreate'));
-
-    store.on('gameReady', this.sendArgAsPayloadToEveryone('GameReady'));
-
-    store.on('gameStart', this.sendArgAsPayloadToEveryone('GameStart'));
   }
 
   handle(...args: ConstructorParameters<typeof Connection>) {
@@ -162,11 +155,6 @@ class Connection {
         this.send({
           type: 'Error',
           payload: { text: 'User already in other room' },
-        });
-      } else if (e instanceof GameNotStartedYet) {
-        this.send({
-          type: 'Error',
-          payload: { text: 'Game not started yet' },
         });
       }
     }
