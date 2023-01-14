@@ -1,6 +1,7 @@
 import crypto from 'crypto';
 import { TypedEmitter } from 'tiny-typed-emitter';
 import { Field } from './field';
+import { Game } from './game';
 import { Room as RoomDto, Field as FieldDto, User } from './types';
 
 type Player = User & {
@@ -23,6 +24,8 @@ export class Room extends TypedEmitter<{
   private name: string;
 
   private password: string;
+
+  private game?: Game;
 
   constructor({
     name,
@@ -85,10 +88,37 @@ export class Room extends TypedEmitter<{
     }
   }
 
-  createGame() {
-    if (!this.player1.readyToPlay || !this.player2?.readyToPlay) {
+  startGame() {
+    if (
+      !this.player1.readyToPlay ||
+      !this.player2?.readyToPlay ||
+      !this.player1.positions ||
+      !this.player2.positions
+    ) {
       return;
     }
+
+    this.game = new Game({
+      player1: {
+        id: this.player1.id,
+        name: this.player1.name,
+        positions: this.player1.positions,
+        attacks: new Field(),
+      },
+      player2: {
+        id: this.player2.id,
+        name: this.player2.name,
+        positions: this.player2.positions,
+        attacks: new Field(),
+      },
+    });
+  }
+
+  getGame() {
+    if (!this.game) {
+      throw new GameNotStartedYetError();
+    }
+    return this.game;
   }
 
   isValidField(field: Field) {
@@ -135,5 +165,7 @@ export class WrongRoomPasswordError extends Error {}
 export class UserAlreadyInRoomError extends Error {}
 
 export class UserAlreadyInOtherRoomError extends Error {}
+
+export class GameNotStartedYetError extends Error {}
 
 export class InvalidFieldError extends Error {}

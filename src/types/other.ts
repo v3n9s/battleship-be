@@ -12,8 +12,12 @@ export type Room = {
 };
 
 export type Game = {
-  player1: { user: User; attacks: Field };
-  player2: { user: User; attacks: Field };
+  player1: User & {
+    attacks: Field;
+  };
+  player2: User & {
+    attacks: Field;
+  };
 };
 
 export type Field = boolean[][];

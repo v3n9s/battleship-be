@@ -1,6 +1,6 @@
 import { Field as FieldDto } from './types';
 
-type CellIndex = [number, number];
+export type CellIndex = [number, number];
 
 type Ship = CellIndex[];
 
