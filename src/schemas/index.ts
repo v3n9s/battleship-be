@@ -6,12 +6,12 @@ import {
   Field,
   JoinRoomMessage,
   LeaveRoomMessage,
-  ReadyGameMessage,
-  ReadyRoomMessage,
   SetPositionsMessage,
-  CreateGameMessage,
   User,
   StartGameMessage,
+  ReadyToPositionMessage,
+  ReadyToPlayMessage,
+  MoveGameMessage,
 } from '../types';
 
 export const idSchema: JSONSchemaType<string> = {
@@ -84,7 +84,16 @@ export const leaveRoomMessageSchema: JSONSchemaType<LeaveRoomMessage> = {
   required: ['roomId'],
 };
 
-export const readyRoomMessageSchema: JSONSchemaType<ReadyRoomMessage> = {
+export const readyToPositionMessageSchema: JSONSchemaType<ReadyToPositionMessage> =
+  {
+    type: 'object',
+    properties: {
+      roomId: idSchema,
+    },
+    required: ['roomId'],
+  };
+
+export const readyToPlayMessageSchema: JSONSchemaType<ReadyToPlayMessage> = {
   type: 'object',
   properties: {
     roomId: idSchema,
@@ -101,22 +110,6 @@ export const setPositionsMessageSchema: JSONSchemaType<SetPositionsMessage> = {
   required: ['roomId', 'positions'],
 };
 
-export const createGameMessageSchema: JSONSchemaType<CreateGameMessage> = {
-  type: 'object',
-  properties: {
-    roomId: idSchema,
-  },
-  required: ['roomId'],
-};
-
-export const readyGameMessageSchema: JSONSchemaType<ReadyGameMessage> = {
-  type: 'object',
-  properties: {
-    roomId: idSchema,
-  },
-  required: ['roomId'],
-};
-
 export const startGameMessageSchema: JSONSchemaType<StartGameMessage> = {
   type: 'object',
   properties: {
@@ -125,16 +118,43 @@ export const startGameMessageSchema: JSONSchemaType<StartGameMessage> = {
   required: ['roomId'],
 };
 
+const positionSchema: JSONSchemaType<[number, number]> = {
+  type: 'array',
+  minItems: 2,
+  maxItems: 2,
+  items: [
+    {
+      type: 'integer',
+      minimum: 0,
+      maximum: 9,
+    },
+    {
+      type: 'integer',
+      minimum: 0,
+      maximum: 9,
+    },
+  ],
+};
+
+export const moveGameMessageSchema: JSONSchemaType<MoveGameMessage> = {
+  type: 'object',
+  properties: {
+    roomId: idSchema,
+    position: positionSchema,
+  },
+  required: ['roomId', 'position'],
+};
+
 export const ClientMessageValidatonFuncs = Object.fromEntries(
   Object.entries({
     CreateRoom: createRoomMessageSchema,
     JoinRoom: joinRoomMessageSchema,
     LeaveRoom: leaveRoomMessageSchema,
-    ReadyRoom: readyRoomMessageSchema,
+    ReadyToPosition: readyToPositionMessageSchema,
+    ReadyToPlay: readyToPlayMessageSchema,
     SetPositions: setPositionsMessageSchema,
-    CreateGame: createGameMessageSchema,
-    ReadyGame: readyGameMessageSchema,
     StartGame: startGameMessageSchema,
+    MoveGame: moveGameMessageSchema,
   } satisfies {
     [K in keyof ClientMessages]: JSONSchemaType<ClientMessages[K]>;
   }).map(([k, v]) => [k, ajv.compile(v)]),

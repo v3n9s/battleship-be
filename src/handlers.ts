@@ -15,13 +15,21 @@ export const handlers = {
   LeaveRoom: ({ user, payload: { roomId } }) => {
     store.getRoom(roomId).leave(user.id);
   },
-  ReadyRoom: ({ user, payload: { roomId } }) => {},
-  CreateGame: ({ payload: { roomId } }) => {
-    store.getRoom(roomId).createGame();
+  ReadyToPosition: ({ user, payload: { roomId } }) => {
+    store.getRoom(roomId).readyToPosition(user.id);
   },
-  ReadyGame: ({ user, payload: { roomId } }) => {},
-  SetPositions: ({ user, payload: { roomId, positions } }) => {},
-  StartGame: ({ payload: { roomId } }) => {},
+  ReadyToPlay: ({ user, payload: { roomId } }) => {
+    store.getRoom(roomId).readyToPlay(user.id);
+  },
+  SetPositions: ({ user, payload: { roomId, positions } }) => {
+    store.getRoom(roomId).setPositions({ userId: user.id, positions });
+  },
+  StartGame: ({ payload: { roomId } }) => {
+    store.getRoom(roomId).startGame();
+  },
+  MoveGame: ({ user, payload: { roomId, position } }) => {
+    store.getRoom(roomId).getGame().move(user.id, position);
+  },
 } satisfies {
   [K in keyof ClientMessages]: Handler<ClientMessages[K]>;
 };

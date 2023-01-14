@@ -21,7 +21,11 @@ export type LeaveRoomMessage = {
   roomId: string;
 };
 
-export type ReadyRoomMessage = {
+export type ReadyToPositionMessage = {
+  roomId: string;
+};
+
+export type ReadyToPlayMessage = {
   roomId: string;
 };
 
@@ -30,27 +34,24 @@ export type SetPositionsMessage = {
   positions: Field;
 };
 
-export type CreateGameMessage = {
-  roomId: string;
-};
-
-export type ReadyGameMessage = {
-  roomId: string;
-};
-
 export type StartGameMessage = {
   roomId: string;
+};
+
+export type MoveGameMessage = {
+  roomId: string;
+  position: [number, number];
 };
 
 export type ClientMessages = {
   CreateRoom: CreateRoomMessage;
   JoinRoom: JoinRoomMessage;
   LeaveRoom: LeaveRoomMessage;
-  ReadyRoom: ReadyRoomMessage;
+  ReadyToPosition: ReadyToPositionMessage;
+  ReadyToPlay: ReadyToPlayMessage;
   SetPositions: SetPositionsMessage;
-  CreateGame: CreateGameMessage;
-  ReadyGame: ReadyGameMessage;
   StartGame: StartGameMessage;
+  MoveGame: MoveGameMessage;
 };
 
 export type ClientMessage = ObjectToUnion<
