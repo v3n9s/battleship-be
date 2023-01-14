@@ -47,34 +47,22 @@ export class Field {
     );
   }
 
-  toDto(): FieldDto {
-    return this.field;
-  }
-}
-
-export class ShipsField {
-  private field: Field;
-
-  constructor(field: Field) {
-    this.field = field;
-  }
-
   getShipAt([x, y]: CellIndex) {
-    if (!this.field.at([x, y])) {
+    if (!this.at([x, y])) {
       throw new ShipNotFoundError();
     }
     const horizontalShip: Ship = [[x, y]];
-    for (let c = 1; this.field.at([x + c, y]); c++) {
+    for (let c = 1; this.at([x + c, y]); c++) {
       horizontalShip.push([x + c, y]);
     }
-    if (this.field.isCellsSurroundedWithFalse(horizontalShip)) {
+    if (this.isCellsSurroundedWithFalse(horizontalShip)) {
       return horizontalShip;
     } else {
       const verticalShip: Ship = [[x, y]];
-      for (let c = 1; this.field.at([x, y + c]); c++) {
+      for (let c = 1; this.at([x, y + c]); c++) {
         verticalShip.push([x, y + c]);
       }
-      if (this.field.isCellsSurroundedWithFalse(verticalShip)) {
+      if (this.isCellsSurroundedWithFalse(verticalShip)) {
         return verticalShip;
       }
       throw new CollidingShipError();
@@ -86,7 +74,7 @@ export class ShipsField {
     for (let i = 0; i < 10; i++) {
       for (let u = 0; u < 10; u++) {
         if (
-          this.field.at([i, u]) ||
+          this.at([i, u]) ||
           ships.flat().every(([x, y]) => x !== i && y !== u)
         ) {
           ships.push(this.getShipAt([i, u]));
@@ -94,6 +82,10 @@ export class ShipsField {
       }
     }
     return ships;
+  }
+
+  toDto(): FieldDto {
+    return this.field;
   }
 }
 

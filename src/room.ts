@@ -1,6 +1,6 @@
 import crypto from 'crypto';
 import { TypedEmitter } from 'tiny-typed-emitter';
-import { Field, ShipsField } from './field';
+import { Field } from './field';
 import { Room as RoomDto, Field as FieldDto, User } from './types';
 
 type Player = User & {
@@ -92,9 +92,8 @@ export class Room extends TypedEmitter<{
   }
 
   isValidField(field: Field) {
-    const shipsField = new ShipsField(field);
     try {
-      const ships = shipsField.getShips().map(({ length }) => length);
+      const ships = field.getShips().map(({ length }) => length);
       return (
         ships.every((v) => [1, 2, 3, 4].includes(v)) &&
         ships.filter((v) => v === 1).length === 4 &&
