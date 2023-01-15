@@ -5,14 +5,12 @@ import { Game } from './game';
 import { Room as RoomDto, Field as FieldDto, User } from './types';
 
 type Player = User & {
-  readyToPosition: boolean;
   readyToPlay: boolean;
   positions: Field | null;
 };
 
 export class Room extends TypedEmitter<{
   join: (user: User) => void;
-  readyToPosition: (userId: string) => void;
   readyToPlay: (userId: string) => void;
   gameStart: (game: Game) => void;
   leave: (userId: string) => void;
@@ -49,7 +47,6 @@ export class Room extends TypedEmitter<{
   private createPlayer(user: User) {
     return {
       ...user,
-      readyToPosition: false,
       readyToPlay: false,
       positions: null,
     };
@@ -72,16 +69,6 @@ export class Room extends TypedEmitter<{
     } else if (userId === this.player2?.id) {
       this.emit('leave', this.player2.id);
       delete this.player2;
-    }
-  }
-
-  readyToPosition(userId: string) {
-    if (userId === this.player1.id) {
-      this.player1.readyToPosition = true;
-      this.emit('readyToPosition', userId);
-    } else if (userId === this.player2?.id) {
-      this.player2.readyToPosition = true;
-      this.emit('readyToPosition', userId);
     }
   }
 

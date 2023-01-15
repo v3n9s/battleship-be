@@ -29,11 +29,6 @@ class Connections {
     store.on('roomDelete', this.sendArgAsPayloadToEveryone('RoomDelete'));
 
     store.on(
-      'roomReadyToPosition',
-      this.sendArgAsPayloadToEveryone('RoomReadyToPosition'),
-    );
-
-    store.on(
       'roomReadyToPlay',
       this.sendArgAsPayloadToEveryone('RoomReadyToPlay'),
     );

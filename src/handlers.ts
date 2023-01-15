@@ -15,9 +15,6 @@ export const handlers = {
   LeaveRoom: ({ user, payload: { roomId } }) => {
     store.getRoom(roomId).leave(user.id);
   },
-  ReadyToPosition: ({ user, payload: { roomId } }) => {
-    store.getRoom(roomId).readyToPosition(user.id);
-  },
   ReadyToPlay: ({ user, payload: { roomId } }) => {
     store.getRoom(roomId).readyToPlay(user.id);
   },

@@ -21,10 +21,6 @@ export type LeaveRoomMessage = {
   roomId: string;
 };
 
-export type ReadyToPositionMessage = {
-  roomId: string;
-};
-
 export type ReadyToPlayMessage = {
   roomId: string;
 };
@@ -47,7 +43,6 @@ export type ClientMessages = {
   CreateRoom: CreateRoomMessage;
   JoinRoom: JoinRoomMessage;
   LeaveRoom: LeaveRoomMessage;
-  ReadyToPosition: ReadyToPositionMessage;
   ReadyToPlay: ReadyToPlayMessage;
   SetPositions: SetPositionsMessage;
   StartGame: StartGameMessage;
