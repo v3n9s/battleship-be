@@ -1,6 +1,9 @@
 {
   "name": "battleship-be",
   "private": true,
+  "exports": {
+    "./types": "./src/types/index.ts"
+  },
   "scripts": {
     "dev": "webpack --env mode=dev",
     "build": "webpack",
