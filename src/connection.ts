@@ -14,6 +14,7 @@ import {
   UserAlreadyInRoomError,
   WrongRoomPasswordError,
 } from './room';
+import { TypedEmitter } from 'tiny-typed-emitter';
 
 class Connections {
   connections: Connection[] = [];
@@ -47,7 +48,11 @@ class Connections {
   }
 
   handle(...args: ConstructorParameters<typeof Connection>) {
-    this.connections.push(new Connection(...args));
+    const connection = new Connection(...args);
+    connection.once('close', () => {
+      this.connections = this.connections.filter((conn) => conn !== connection);
+    });
+    this.connections.push(connection);
   }
 
   sendArgAsPayloadToEveryone<T extends keyof ServerMessages>(type: T) {
@@ -61,7 +66,9 @@ class Connections {
 
 export const connections = new Connections();
 
-class Connection {
+class Connection extends TypedEmitter<{
+  close: () => void;
+}> {
   id: string;
 
   name: string;
@@ -73,11 +80,15 @@ class Connection {
   }
 
   constructor({ session, socket }: { session: User; socket: WebSocket }) {
+    super();
     this.id = session.id;
     this.name = session.name;
     this.socket = socket;
 
     this.socket.on('message', this.onMessage.bind(this));
+    this.socket.once('close', () => {
+      this.emit('close');
+    });
 
     this.send({
       type: 'ExistingRooms',
