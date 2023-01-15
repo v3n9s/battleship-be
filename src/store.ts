@@ -77,7 +77,7 @@ class Store extends TypedEmitter<{
     });
 
     room.on('delete', () => {
-      this.rooms = this.rooms.filter(({ id }) => id === room.id);
+      this.rooms = this.rooms.filter(({ id }) => id !== room.id);
       this.emit('roomDelete', { roomId: room.id });
       room.removeAllListeners();
     });
