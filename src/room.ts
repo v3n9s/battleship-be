@@ -53,11 +53,14 @@ export class Room extends TypedEmitter<{
   }
 
   join({ password, user }: { password: string; user: User }) {
-    if (this.password !== password) {
-      throw new WrongRoomPasswordError();
-    }
     if (this.player1.id === user.id) {
       throw new UserAlreadyInRoomError();
+    }
+    if (this.player2?.id) {
+      throw new RoomIsBusyError();
+    }
+    if (this.password !== password) {
+      throw new WrongRoomPasswordError();
     }
     this.player2 = this.createPlayer(user);
     this.emit('join', this.player2);
@@ -158,6 +161,8 @@ export class Room extends TypedEmitter<{
 export class WrongRoomPasswordError extends Error {}
 
 export class UserAlreadyInRoomError extends Error {}
+
+export class RoomIsBusyError extends Error {}
 
 export class UserAlreadyInOtherRoomError extends Error {}
 
