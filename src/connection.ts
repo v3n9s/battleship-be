@@ -10,6 +10,9 @@ import {
 } from './types';
 import { RoomNotFoundError, store } from './store';
 import {
+  GameNotStartedYetError,
+  InvalidFieldError,
+  RoomIsBusyError,
   UserAlreadyInOtherRoomError,
   UserAlreadyInRoomError,
   WrongRoomPasswordError,
@@ -173,10 +176,25 @@ class Connection extends TypedEmitter<{
           type: 'Error',
           payload: { text: 'User already in room' },
         });
+      } else if (e instanceof RoomIsBusyError) {
+        this.send({
+          type: 'Error',
+          payload: { text: "Can't join, room is full" },
+        });
       } else if (e instanceof UserAlreadyInOtherRoomError) {
         this.send({
           type: 'Error',
           payload: { text: 'User already in other room' },
+        });
+      } else if (e instanceof GameNotStartedYetError) {
+        this.send({
+          type: 'Error',
+          payload: { text: 'Game not started yet' },
+        });
+      } else if (e instanceof InvalidFieldError) {
+        this.send({
+          type: 'Error',
+          payload: { text: 'Invalid ships positions' },
         });
       }
     }
