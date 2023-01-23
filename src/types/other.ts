@@ -26,7 +26,6 @@ export type Game = {
 
 export type Field = boolean[][];
 
-export type UserData = {
+export type UserData = User & {
   token: string;
-  user: User;
 };

@@ -55,8 +55,8 @@ const createTokenHandler: http.RequestListener = (req, res) => {
   };
   res.write(
     JSON.stringify({
+      ...user,
       token: jwt.sign(user, config.jwtSecret),
-      user,
     } satisfies UserData),
   );
   res.end();
