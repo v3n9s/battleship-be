@@ -3,12 +3,16 @@ export type User = {
   name: string;
 };
 
+export type Player = User & {
+  readyToPlay: boolean;
+};
+
 export type Room = {
   id: string;
   name: string;
   hasPassword: boolean;
-  player1: User;
-  player2?: User | undefined;
+  player1: Player;
+  player2?: Player | undefined;
 };
 
 export type Game = {

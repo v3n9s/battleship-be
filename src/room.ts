@@ -152,8 +152,16 @@ export class Room extends TypedEmitter<{
       id: this.id,
       name: this.name,
       hasPassword: !!this.password,
-      player1: this.player1,
-      player2: this.player2,
+      player1: {
+        id: this.player1.id,
+        name: this.player1.name,
+        readyToPlay: this.player1.readyToPlay,
+      },
+      player2: this.player2 && {
+        id: this.player2.id,
+        name: this.player2.name,
+        readyToPlay: this.player2.readyToPlay,
+      },
     };
   }
 }
