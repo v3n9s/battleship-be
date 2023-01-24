@@ -13,54 +13,54 @@ export class Field {
     this.field = field;
   }
 
-  at([x, y]: CellIndex) {
-    return !!this.field[x]?.[y];
+  at([rowInd, colInd]: CellIndex) {
+    return !!this.field[rowInd]?.[colInd];
   }
 
-  set([x, y]: CellIndex, value: boolean) {
-    const col = this.field[x];
-    if (col && y in col) {
-      col[y] = value;
+  set([rowInd, colInd]: CellIndex, value: boolean) {
+    const col = this.field[rowInd];
+    if (col && colInd in col) {
+      col[colInd] = value;
     }
   }
 
-  getSurroundingCellsIndicies([x, y]: CellIndex): [number, number][] {
+  getSurroundingCellsIndicies([rowInd, colInd]: CellIndex): [number, number][] {
     return [
-      [x - 1, y - 1],
-      [x - 1, y],
-      [x - 1, y + 1],
-      [x, y - 1],
-      [x, y + 1],
-      [x + 1, y - 1],
-      [x + 1, y],
-      [x + 1, y + 1],
+      [rowInd - 1, colInd - 1],
+      [rowInd - 1, colInd],
+      [rowInd - 1, colInd + 1],
+      [rowInd, colInd - 1],
+      [rowInd, colInd + 1],
+      [rowInd + 1, colInd - 1],
+      [rowInd + 1, colInd],
+      [rowInd + 1, colInd + 1],
     ];
   }
 
   isCellsSurroundedWithFalse(cellIndicies: CellIndex[]) {
     return cellIndicies.every((cell) =>
       this.getSurroundingCellsIndicies(cell)
-        .filter(([sx, sy]) =>
-          cellIndicies.every(([x, y]) => x !== sx && y !== sy),
+        .filter(
+          ([sx, sy]) => !cellIndicies.some(([x, y]) => x === sx && y === sy),
         )
         .every(([x, y]) => !this.at([x, y])),
     );
   }
 
-  getShipAt([x, y]: CellIndex) {
-    if (!this.at([x, y])) {
+  getShipAt([rowInd, colInd]: CellIndex) {
+    if (!this.at([rowInd, colInd])) {
       throw new ShipNotFoundError();
     }
-    const horizontalShip: Ship = [[x, y]];
-    for (let c = 1; this.at([x + c, y]); c++) {
-      horizontalShip.push([x + c, y]);
+    const horizontalShip: Ship = [[rowInd, colInd]];
+    for (let c = 1; this.at([rowInd, colInd + c]); c++) {
+      horizontalShip.push([rowInd, colInd + c]);
     }
     if (this.isCellsSurroundedWithFalse(horizontalShip)) {
       return horizontalShip;
     } else {
-      const verticalShip: Ship = [[x, y]];
-      for (let c = 1; this.at([x, y + c]); c++) {
-        verticalShip.push([x, y + c]);
+      const verticalShip: Ship = [[rowInd, colInd]];
+      for (let c = 1; this.at([rowInd + c, colInd]); c++) {
+        verticalShip.push([rowInd + c, colInd]);
       }
       if (this.isCellsSurroundedWithFalse(verticalShip)) {
         return verticalShip;
@@ -71,13 +71,18 @@ export class Field {
 
   getShips() {
     const ships: Ship[] = [];
-    for (let i = 0; i < 10; i++) {
-      for (let u = 0; u < 10; u++) {
+    for (let rowInd = 0; rowInd < 10; rowInd++) {
+      for (let colInd = 0; colInd < 10; colInd++) {
         if (
-          this.at([i, u]) ||
-          ships.flat().every(([x, y]) => x !== i && y !== u)
+          this.at([rowInd, colInd]) &&
+          !ships
+            .flat()
+            .some(
+              ([shipRowInd, shipColInd]) =>
+                shipRowInd === rowInd && shipColInd === colInd,
+            )
         ) {
-          ships.push(this.getShipAt([i, u]));
+          ships.push(this.getShipAt([rowInd, colInd]));
         }
       }
     }
