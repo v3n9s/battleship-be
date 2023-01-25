@@ -1,4 +1,4 @@
-import { Room, User } from '../other';
+import { Field, Room, User } from '../other';
 import {
   KeysAsValues,
   MergeObjects,
@@ -6,6 +6,12 @@ import {
   WrapValueWithPayloadObject,
   WrapValueWithTypeObject,
 } from '../utils';
+
+export type ExistingRoomsMessage = Room[];
+
+export type ExistingPositionsMessage = {
+  [roomId: string]: Field;
+};
 
 export type ErrorMessage = {
   text: string;
@@ -52,9 +58,9 @@ export type GameEndMessage = {
   winner: User;
 };
 
-export type ExistingRoomsMessage = Room[];
-
 export type ServerMessages = {
+  ExistingRooms: ExistingRoomsMessage;
+  ExistingPositions: ExistingPositionsMessage;
   Error: ErrorMessage;
   RoomCreate: RoomCreateMessage;
   RoomJoin: RoomJoinMessage;
@@ -65,7 +71,6 @@ export type ServerMessages = {
   GameHit: GameHitMessage;
   GameMiss: GameMissMessage;
   GameEnd: GameEndMessage;
-  ExistingRooms: ExistingRoomsMessage;
 };
 
 export type ServerMessage = ObjectToUnion<

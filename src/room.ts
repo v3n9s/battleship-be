@@ -18,9 +18,9 @@ export class Room extends TypedEmitter<{
 }> {
   id: string;
 
-  private player1: Player;
+  player1: Player;
 
-  private player2?: Player;
+  player2?: Player;
 
   private name: string;
 

@@ -4,6 +4,7 @@ import { ClientMessageValidatonFuncs } from './schemas';
 import {
   ClientMessage,
   ClientMessages,
+  Field,
   ServerMessage,
   ServerMessages,
   User,
@@ -91,6 +92,26 @@ class Connection extends TypedEmitter<{
     this.send({
       type: 'ExistingRooms',
       payload: store.getRooms().map((r) => r.toDto()),
+    });
+
+    this.send({
+      type: 'ExistingPositions',
+      payload: Object.fromEntries(
+        store
+          .getRooms()
+          .map(
+            (room) =>
+              [
+                room.id,
+                this.id === room.player1.id
+                  ? room.player1.positions?.toDto()
+                  : this.id === room.player2?.id
+                  ? room.player2?.positions?.toDto()
+                  : null,
+              ] as [string, Field | null],
+          )
+          .filter(([, positions]) => positions) as [string, Field][],
+      ),
     });
   }
 
