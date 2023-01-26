@@ -33,6 +33,11 @@ class Connections {
     store.on('roomDelete', this.sendArgAsPayloadToEveryone('RoomDelete'));
 
     store.on(
+      'roomPositionsSet',
+      this.sendArgAsPayloadToEveryone('RoomPositionsSet'),
+    );
+
+    store.on(
       'roomReadyToPlay',
       this.sendArgAsPayloadToEveryone('RoomReadyToPlay'),
     );

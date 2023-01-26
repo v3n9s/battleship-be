@@ -11,6 +11,7 @@ type Player = User & {
 
 export class Room extends TypedEmitter<{
   join: (user: User) => void;
+  positionsSet: (userId: string) => void;
   readyToPlay: (userId: string) => void;
   gameStart: (game: Game) => void;
   leave: (userId: string) => void;
@@ -142,8 +143,10 @@ export class Room extends TypedEmitter<{
 
     if (userId === this.player1.id) {
       this.player1.positions = field;
+      this.emit('positionsSet', this.player1.id);
     } else if (userId === this.player2?.id) {
       this.player2.positions = field;
+      this.emit('positionsSet', this.player2.id);
     }
   }
 

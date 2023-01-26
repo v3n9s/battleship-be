@@ -9,6 +9,7 @@ import {
   RoomDeleteMessage,
   RoomJoinMessage,
   RoomLeaveMessage,
+  RoomPositionsSetMessage,
   RoomReadyToPlayMessage,
   User,
 } from './types';
@@ -18,6 +19,7 @@ class Store extends TypedEmitter<{
   roomJoin: (args: RoomJoinMessage) => void;
   roomLeave: (args: RoomLeaveMessage) => void;
   roomDelete: (args: RoomDeleteMessage) => void;
+  roomPositionsSet: (args: RoomPositionsSetMessage) => void;
   roomReadyToPlay: (args: RoomReadyToPlayMessage) => void;
   gameStart: (args: GameStartMessage) => void;
   gameHit: (args: GameHitMessage) => void;
@@ -47,6 +49,10 @@ class Store extends TypedEmitter<{
 
     room.on('leave', (userId) => {
       this.emit('roomLeave', { roomId: room.id, userId });
+    });
+
+    room.on('positionsSet', (userId) => {
+      this.emit('roomPositionsSet', { roomId: room.id, userId });
     });
 
     room.on('readyToPlay', (userId) => {
