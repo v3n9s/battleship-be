@@ -1,4 +1,4 @@
-import { Field, Room, User } from '../other';
+import { Field, Room, User, UserData } from '../other';
 import {
   KeysAsValues,
   MergeObjects,
@@ -6,6 +6,10 @@ import {
   WrapValueWithPayloadObject,
   WrapValueWithTypeObject,
 } from '../utils';
+
+export type TokenCreateMessage = UserData;
+
+export type TokenRequestMessage = undefined;
 
 export type ExistingRoomsMessage = Room[];
 
@@ -64,6 +68,8 @@ export type GameEndMessage = {
 };
 
 export type ServerMessages = {
+  TokenCreate: TokenCreateMessage;
+  TokenRequest: TokenRequestMessage;
   ExistingRooms: ExistingRoomsMessage;
   ExistingPositions: ExistingPositionsMessage;
   Error: ErrorMessage;

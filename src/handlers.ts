@@ -28,5 +28,5 @@ export const handlers = {
     store.getRoom(roomId).getGame().move(user.id, position);
   },
 } satisfies {
-  [K in keyof ClientMessages]: Handler<ClientMessages[K]>;
+  [K in keyof ClientMessages]?: Handler<ClientMessages[K]>;
 };

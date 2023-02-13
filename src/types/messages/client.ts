@@ -7,6 +7,14 @@ import {
   WrapValueWithTypeObject,
 } from '../utils';
 
+export type GetTokenMessage = {
+  name: string;
+};
+
+export type SubmitTokenMessage = {
+  token: string;
+};
+
 export type CreateRoomMessage = {
   name: string;
   password: string;
@@ -40,6 +48,8 @@ export type MoveGameMessage = {
 };
 
 export type ClientMessages = {
+  GetToken: GetTokenMessage;
+  SubmitToken: SubmitTokenMessage;
   CreateRoom: CreateRoomMessage;
   JoinRoom: JoinRoomMessage;
   LeaveRoom: LeaveRoomMessage;

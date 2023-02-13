@@ -11,6 +11,8 @@ import {
   StartGameMessage,
   ReadyToPlayMessage,
   MoveGameMessage,
+  GetTokenMessage,
+  SubmitTokenMessage,
 } from '../types';
 
 export const idSchema: JSONSchemaType<string> = {
@@ -55,6 +57,25 @@ export const fieldSchema: JSONSchemaType<Field> = {
       type: 'boolean',
     },
   },
+};
+
+export const getTokenMessageSchema: JSONSchemaType<GetTokenMessage> = {
+  type: 'object',
+  properties: {
+    name: nameSchema,
+  },
+  required: ['name'],
+};
+
+export const submitTokenMessageSchema: JSONSchemaType<SubmitTokenMessage> = {
+  type: 'object',
+  properties: {
+    token: {
+      type: 'string',
+      maxLength: 512,
+    },
+  },
+  required: ['token'],
 };
 
 export const createRoomMessageSchema: JSONSchemaType<CreateRoomMessage> = {
@@ -137,6 +158,8 @@ export const moveGameMessageSchema: JSONSchemaType<MoveGameMessage> = {
 
 export const ClientMessageValidatonFuncs = Object.fromEntries(
   Object.entries({
+    GetToken: getTokenMessageSchema,
+    SubmitToken: submitTokenMessageSchema,
     CreateRoom: createRoomMessageSchema,
     JoinRoom: joinRoomMessageSchema,
     LeaveRoom: leaveRoomMessageSchema,

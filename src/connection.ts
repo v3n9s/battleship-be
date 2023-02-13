@@ -1,13 +1,22 @@
+import crypto from 'crypto';
 import { RawData, WebSocket } from 'ws';
+import jwt from 'jsonwebtoken';
 import { Handler, handlers } from './handlers';
-import { ClientMessageValidatonFuncs } from './schemas';
+import {
+  ClientMessageValidatonFuncs,
+  nameValidationFunc,
+  userValidationFunc,
+} from './schemas';
 import {
   ClientMessage,
   ClientMessages,
   Field,
+  GetTokenMessage,
   ServerMessage,
   ServerMessages,
+  SubmitTokenMessage,
   User,
+  UserData,
 } from './types';
 import { RoomNotFoundError, store } from './store';
 import {
@@ -19,6 +28,7 @@ import {
   WrongRoomPasswordError,
 } from './room';
 import { TypedEmitter } from 'tiny-typed-emitter';
+import config from './config';
 
 class Connections {
   connections: Connection[] = [];
@@ -73,20 +83,12 @@ export const connections = new Connections();
 class Connection extends TypedEmitter<{
   close: () => void;
 }> {
-  id: string;
-
-  name: string;
-
   socket: WebSocket;
 
-  get session() {
-    return { id: this.id, name: this.name };
-  }
+  session: UserData | null = null;
 
-  constructor({ session, socket }: { session: User; socket: WebSocket }) {
+  constructor({ socket }: { socket: WebSocket }) {
     super();
-    this.id = session.id;
-    this.name = session.name;
     this.socket = socket;
 
     this.socket.on('message', this.onMessage.bind(this));
@@ -108,9 +110,9 @@ class Connection extends TypedEmitter<{
             (room) =>
               [
                 room.id,
-                this.id === room.player1.id
+                this.session && this.session?.id === room.player1.id
                   ? room.player1.positions?.toDto()
-                  : this.id === room.player2?.id
+                  : this.session && this.session?.id === room.player2?.id
                   ? room.player2?.positions?.toDto()
                   : null,
               ] as [string, Field | null],
@@ -146,6 +148,55 @@ class Connection extends TypedEmitter<{
     return ClientMessageValidatonFuncs[message.type](payload);
   }
 
+  isValidTokenSignature(token: string) {
+    try {
+      jwt.verify(token, config.jwtSecret);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  handleGetTokenMessage({ name }: GetTokenMessage) {
+    if (!nameValidationFunc(name)) {
+      this.send({
+        type: 'Error',
+        payload: { text: 'Invalid name property' },
+      });
+      return;
+    }
+    const user: User = {
+      id: crypto.randomUUID(),
+      name,
+    };
+    this.send({
+      type: 'TokenCreate',
+      payload: {
+        ...user,
+        token: jwt.sign(user, config.jwtSecret),
+      },
+    });
+  }
+
+  handleSubmitTokenMessage({ token }: SubmitTokenMessage) {
+    let payload: unknown;
+    if (
+      !this.isValidTokenSignature(token) ||
+      !userValidationFunc((payload = jwt.decode(token)))
+    ) {
+      this.send({
+        type: 'Error',
+        payload: { text: 'Invalid token signature or payload' },
+      });
+      return;
+    }
+    this.session = {
+      id: payload.id,
+      name: payload.name,
+      token,
+    };
+  }
+
   onMessage(data: RawData, isBin: boolean) {
     if (isBin || !(data instanceof Buffer)) {
       this.send({
@@ -178,6 +229,21 @@ class Connection extends TypedEmitter<{
         type: 'Error',
         payload: { text: 'Message data is wrong' },
       });
+      return;
+    }
+
+    if (message.type === 'GetToken') {
+      this.handleGetTokenMessage(message.payload);
+      return;
+    }
+
+    if (message.type === 'SubmitToken') {
+      this.handleSubmitTokenMessage(message.payload);
+      return;
+    }
+
+    if (!this.session) {
+      this.send({ type: 'TokenRequest' });
       return;
     }
 
