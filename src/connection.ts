@@ -129,16 +129,13 @@ class Connection extends TypedEmitter<{
   isExistingClientMessage(message: unknown): message is {
     type: keyof ClientMessages;
   } {
-    if (
-      message &&
+    return (
+      !!message &&
       typeof message === 'object' &&
       'type' in message &&
       typeof message.type === 'string' &&
       message.type in ClientMessageValidatonFuncs
-    ) {
-      return true;
-    }
-    return false;
+    );
   }
 
   isValidClientMessage(message: {
