@@ -1,11 +1,5 @@
 import { Field } from '../other';
-import {
-  KeysAsValues,
-  MergeObjects,
-  ObjectToUnion,
-  WrapValueWithPayloadObject,
-  WrapValueWithTypeObject,
-} from '../utils';
+import { MessagesObjectToUnion } from '../utils';
 
 export type GetTokenMessage = {
   name: string;
@@ -59,9 +53,4 @@ export type ClientMessages = {
   MoveGame: MoveGameMessage;
 };
 
-export type ClientMessage = ObjectToUnion<
-  MergeObjects<
-    WrapValueWithPayloadObject<ClientMessages>,
-    WrapValueWithTypeObject<KeysAsValues<ClientMessages>>
-  >
->;
+export type ClientMessage = MessagesObjectToUnion<ClientMessages>;

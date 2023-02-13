@@ -1,11 +1,5 @@
 import { Field, Room, User, UserData } from '../other';
-import {
-  KeysAsValues,
-  MergeObjects,
-  ObjectToUnion,
-  WrapValueWithPayloadObject,
-  WrapValueWithTypeObject,
-} from '../utils';
+import { MessagesObjectToUnion } from '../utils';
 
 export type TokenCreateMessage = UserData;
 
@@ -85,9 +79,4 @@ export type ServerMessages = {
   GameEnd: GameEndMessage;
 };
 
-export type ServerMessage = ObjectToUnion<
-  MergeObjects<
-    WrapValueWithPayloadObject<ServerMessages>,
-    WrapValueWithTypeObject<KeysAsValues<ServerMessages>>
-  >
->;
+export type ServerMessage = MessagesObjectToUnion<ServerMessages>;
