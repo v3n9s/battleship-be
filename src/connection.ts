@@ -100,26 +100,6 @@ class Connection extends TypedEmitter<{
       type: 'ExistingRooms',
       payload: store.getRooms().map((r) => r.toDto()),
     });
-
-    this.send({
-      type: 'ExistingPositions',
-      payload: Object.fromEntries(
-        store
-          .getRooms()
-          .map(
-            (room) =>
-              [
-                room.id,
-                this.session && this.session?.id === room.player1.id
-                  ? room.player1.positions?.toDto()
-                  : this.session && this.session?.id === room.player2?.id
-                  ? room.player2?.positions?.toDto()
-                  : null,
-              ] as [string, Field | null],
-          )
-          .filter(([, positions]) => positions) as [string, Field][],
-      ),
-    });
   }
 
   send(message: ServerMessage) {
@@ -198,6 +178,26 @@ class Connection extends TypedEmitter<{
       token,
     };
     this.send({ type: 'TokenSet', payload: this.session });
+
+    this.send({
+      type: 'ExistingPositions',
+      payload: Object.fromEntries(
+        store
+          .getRooms()
+          .map(
+            (room) =>
+              [
+                room.id,
+                this.session && this.session.id === room.player1.id
+                  ? room.player1.positions?.toDto()
+                  : this.session && this.session.id === room.player2?.id
+                  ? room.player2?.positions?.toDto()
+                  : null,
+              ] as [string, Field | null],
+          )
+          .filter(([, positions]) => positions) as [string, Field][],
+      ),
+    });
   }
 
   onMessage(data: RawData, isBin: boolean) {
