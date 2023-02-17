@@ -176,6 +176,11 @@ class Connection extends TypedEmitter<{
   }
 
   handleSubmitTokenMessage({ token }: SubmitTokenMessage) {
+    if (token === null) {
+      this.session = null;
+      this.send({ type: 'TokenSet', payload: null });
+      return;
+    }
     let payload: unknown;
     if (
       !this.isValidTokenSignature(token) ||
@@ -192,6 +197,7 @@ class Connection extends TypedEmitter<{
       name: payload.name,
       token,
     };
+    this.send({ type: 'TokenSet', payload: this.session });
   }
 
   onMessage(data: RawData, isBin: boolean) {
@@ -240,7 +246,7 @@ class Connection extends TypedEmitter<{
     }
 
     if (!this.session) {
-      this.send({ type: 'TokenRequest' });
+      this.send({ type: 'Error', payload: { text: 'You are not logged in' } });
       return;
     }
 

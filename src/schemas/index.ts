@@ -69,12 +69,23 @@ export const getTokenMessageSchema: JSONSchemaType<GetTokenMessage> = {
 
 export const submitTokenMessageSchema: JSONSchemaType<SubmitTokenMessage> = {
   type: 'object',
-  properties: {
-    token: {
-      type: 'string',
-      maxLength: 512,
+  anyOf: [
+    {
+      properties: {
+        token: {
+          type: 'string',
+          maxLength: 512,
+        },
+      },
     },
-  },
+    {
+      properties: {
+        token: {
+          type: 'null',
+        },
+      },
+    },
+  ],
   required: ['token'],
 };
 

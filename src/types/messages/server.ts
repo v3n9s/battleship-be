@@ -3,7 +3,7 @@ import { MessagesObjectToUnion } from '../utils';
 
 export type TokenCreateMessage = UserData;
 
-export type TokenRequestMessage = undefined;
+export type TokenSetMessage = UserData | null;
 
 export type ExistingRoomsMessage = Room[];
 
@@ -63,7 +63,7 @@ export type GameEndMessage = {
 
 export type ServerMessages = {
   TokenCreate: TokenCreateMessage;
-  TokenRequest: TokenRequestMessage;
+  TokenSet: TokenSetMessage;
   ExistingRooms: ExistingRoomsMessage;
   ExistingPositions: ExistingPositionsMessage;
   Error: ErrorMessage;

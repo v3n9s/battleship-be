@@ -6,7 +6,7 @@ export type GetTokenMessage = {
 };
 
 export type SubmitTokenMessage = {
-  token: string;
+  token: string | null;
 };
 
 export type CreateRoomMessage = {
