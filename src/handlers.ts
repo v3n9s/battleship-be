@@ -1,5 +1,5 @@
-import { store } from './store';
-import { ClientMessages, ObjectToUnion, User } from './types';
+import { store } from './store.js';
+import { ClientMessages, ObjectToUnion, User } from './types/index.js';
 
 export type Handler<
   P extends ObjectToUnion<ClientMessages> = ObjectToUnion<ClientMessages>,

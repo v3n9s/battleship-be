@@ -1,5 +1,5 @@
-import { Field, Room, User, UserData } from '../other';
-import { MessagesObjectToUnion } from '../utils';
+import { Field, Room, User, UserData } from '../other.js';
+import { MessagesObjectToUnion } from '../utils.js';
 
 export type TokenCreateMessage = UserData;
 

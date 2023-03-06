@@ -1,6 +1,6 @@
 import { TypedEmitter } from 'tiny-typed-emitter';
-import { CellIndex, Field } from './field';
-import { User, Game as GameDto } from './types';
+import { CellIndex, Field } from './field.js';
+import { User, Game as GameDto } from './types/index.js';
 
 type Player = User & {
   positions: Field;

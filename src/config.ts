@@ -1,7 +1,11 @@
 import 'dotenv/config';
 import Ajv, { JSONSchemaType } from 'ajv';
 
-const ajv = new Ajv({ allErrors: true, coerceTypes: true, useDefaults: true });
+const ajv = new Ajv.default({
+  allErrors: true,
+  coerceTypes: true,
+  useDefaults: true,
+});
 
 interface Config {
   port: number;

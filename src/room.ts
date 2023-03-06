@@ -1,8 +1,8 @@
 import crypto from 'crypto';
 import { TypedEmitter } from 'tiny-typed-emitter';
-import { Field } from './field';
-import { Game } from './game';
-import { Room as RoomDto, Field as FieldDto, User } from './types';
+import { Field } from './field.js';
+import { Game } from './game.js';
+import { Room as RoomDto, Field as FieldDto, User } from './types/index.js';
 
 type Player = User & {
   readyToPlay: boolean;

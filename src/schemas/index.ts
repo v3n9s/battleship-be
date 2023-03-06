@@ -1,5 +1,5 @@
 import { JSONSchemaType, ValidateFunction } from 'ajv';
-import { ajv } from '../ajv-instance';
+import { ajv } from '../ajv-instance.js';
 import {
   ClientMessages,
   CreateRoomMessage,
@@ -13,7 +13,7 @@ import {
   MoveGameMessage,
   GetTokenMessage,
   SubmitTokenMessage,
-} from '../types';
+} from '../types/index.js';
 
 export const idSchema: JSONSchemaType<string> = {
   type: 'string',

@@ -1,6 +1,6 @@
 import { WebSocketServer } from 'ws';
-import { connections } from './connection';
-import config from './config';
+import { connections } from './connection.js';
+import config from './config.js';
 
 export const startServer = () => {
   const wsServer = new WebSocketServer({ port: config.port });

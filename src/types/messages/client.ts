@@ -1,5 +1,5 @@
-import { Field } from '../other';
-import { MessagesObjectToUnion } from '../utils';
+import { Field } from '../other.js';
+import { MessagesObjectToUnion } from '../utils.js';
 
 export type GetTokenMessage = {
   name: string;

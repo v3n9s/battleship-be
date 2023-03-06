@@ -1,12 +1,12 @@
 import crypto from 'crypto';
 import { RawData, WebSocket } from 'ws';
 import jwt from 'jsonwebtoken';
-import { Handler, handlers } from './handlers';
+import { Handler, handlers } from './handlers.js';
 import {
   ClientMessageValidatonFuncs,
   nameValidationFunc,
   userValidationFunc,
-} from './schemas';
+} from './schemas/index.js';
 import {
   ClientMessage,
   ClientMessages,
@@ -17,8 +17,8 @@ import {
   SubmitTokenMessage,
   User,
   UserData,
-} from './types';
-import { RoomNotFoundError, store } from './store';
+} from './types/index.js';
+import { RoomNotFoundError, store } from './store.js';
 import {
   GameNotStartedYetError,
   InvalidFieldError,
@@ -26,9 +26,9 @@ import {
   UserAlreadyInOtherRoomError,
   UserAlreadyInRoomError,
   WrongRoomPasswordError,
-} from './room';
+} from './room.js';
 import { TypedEmitter } from 'tiny-typed-emitter';
-import config from './config';
+import config from './config.js';
 
 class Connections {
   connections: Connection[] = [];

@@ -1,4 +1,4 @@
-import { Field as FieldDto } from './types';
+import { Field as FieldDto } from './types/index.js';
 
 export type CellIndex = [number, number];
 

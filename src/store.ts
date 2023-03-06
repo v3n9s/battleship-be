@@ -1,5 +1,5 @@
 import { TypedEmitter } from 'tiny-typed-emitter';
-import { Room } from './room';
+import { Room } from './room.js';
 import {
   GameEndMessage,
   GameHitMessage,
@@ -12,7 +12,7 @@ import {
   RoomPositionsSetMessage,
   RoomReadyToPlayMessage,
   User,
-} from './types';
+} from './types/index.js';
 
 class Store extends TypedEmitter<{
   roomCreate: (args: RoomCreateMessage) => void;

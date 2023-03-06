@@ -1,13 +1,15 @@
 {
   "name": "battleship-be",
   "private": true,
+  "type": "module",
   "exports": {
     "./types": "./src/types/index.ts"
   },
   "scripts": {
-    "dev": "webpack --env mode=dev",
-    "build": "webpack",
-    "start": "node dist/",
+    "clean": "rimraf ./dist",
+    "dev": "npm run clean && concurrently -rk \"nodemon -C\" \"tsc --watch --preserveWatchOutput\"",
+    "build": "npm run clean && tsc",
+    "start": "node ./dist/index.js",
     "lint": "eslint . --ext .ts"
   },
   "dependencies": {
