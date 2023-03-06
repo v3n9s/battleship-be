@@ -10,7 +10,7 @@
     "dev": "npm run clean && concurrently -rk \"nodemon -C\" \"tsc --watch --preserveWatchOutput\"",
     "build": "npm run clean && tsc",
     "start": "node ./dist/index.js",
-    "lint": "eslint . --ext .ts"
+    "lint": "eslint ./src"
   },
   "dependencies": {
     "@types/jsonwebtoken": "^9.0.0",
