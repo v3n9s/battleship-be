@@ -4,7 +4,7 @@ export type User = {
 };
 
 export type Player = User & {
-  readyToPlay: boolean;
+  hasPositions: boolean;
 };
 
 export type Room = {

@@ -9,7 +9,6 @@ import {
   SetPositionsMessage,
   User,
   StartGameMessage,
-  ReadyToPlayMessage,
   MoveGameMessage,
   GetTokenMessage,
   SubmitTokenMessage,
@@ -115,14 +114,6 @@ export const leaveRoomMessageSchema: JSONSchemaType<LeaveRoomMessage> = {
   required: ['roomId'],
 };
 
-export const readyToPlayMessageSchema: JSONSchemaType<ReadyToPlayMessage> = {
-  type: 'object',
-  properties: {
-    roomId: idSchema,
-  },
-  required: ['roomId'],
-};
-
 export const setPositionsMessageSchema: JSONSchemaType<SetPositionsMessage> = {
   type: 'object',
   properties: {
@@ -174,7 +165,6 @@ export const ClientMessageValidatonFuncs = Object.fromEntries(
     CreateRoom: createRoomMessageSchema,
     JoinRoom: joinRoomMessageSchema,
     LeaveRoom: leaveRoomMessageSchema,
-    ReadyToPlay: readyToPlayMessageSchema,
     SetPositions: setPositionsMessageSchema,
     StartGame: startGameMessageSchema,
     MoveGame: moveGameMessageSchema,

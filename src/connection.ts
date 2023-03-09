@@ -47,11 +47,6 @@ class Connections {
       this.sendArgAsPayloadToEveryone('RoomPositionsSet'),
     );
 
-    store.on(
-      'roomReadyToPlay',
-      this.sendArgAsPayloadToEveryone('RoomReadyToPlay'),
-    );
-
     store.on('gameStart', this.sendArgAsPayloadToEveryone('GameStart'));
 
     store.on('gameHit', this.sendArgAsPayloadToEveryone('GameHit'));

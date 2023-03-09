@@ -23,10 +23,6 @@ export type LeaveRoomMessage = {
   roomId: string;
 };
 
-export type ReadyToPlayMessage = {
-  roomId: string;
-};
-
 export type SetPositionsMessage = {
   roomId: string;
   positions: Field;
@@ -47,7 +43,6 @@ export type ClientMessages = {
   CreateRoom: CreateRoomMessage;
   JoinRoom: JoinRoomMessage;
   LeaveRoom: LeaveRoomMessage;
-  ReadyToPlay: ReadyToPlayMessage;
   SetPositions: SetPositionsMessage;
   StartGame: StartGameMessage;
   MoveGame: MoveGameMessage;

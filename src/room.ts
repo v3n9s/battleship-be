@@ -5,7 +5,6 @@ import { Game } from './game.js';
 import { Room as RoomDto, Field as FieldDto, User } from './types/index.js';
 
 type Player = User & {
-  readyToPlay: boolean;
   positions: Field | null;
 };
 
@@ -48,7 +47,6 @@ export class Room extends TypedEmitter<{
   private createPlayer(user: User) {
     return {
       ...user,
-      readyToPlay: false,
       positions: null,
     };
   }
@@ -76,23 +74,8 @@ export class Room extends TypedEmitter<{
     }
   }
 
-  readyToPlay(userId: string) {
-    if (userId === this.player1.id && this.player1.positions) {
-      this.player1.readyToPlay = true;
-      this.emit('readyToPlay', userId);
-    } else if (userId === this.player2?.id && this.player2?.positions) {
-      this.player2.readyToPlay = true;
-      this.emit('readyToPlay', userId);
-    }
-  }
-
   startGame() {
-    if (
-      !this.player1.readyToPlay ||
-      !this.player2?.readyToPlay ||
-      !this.player1.positions ||
-      !this.player2.positions
-    ) {
+    if (!this.player1.positions || !this.player2?.positions) {
       return;
     }
 
@@ -158,12 +141,12 @@ export class Room extends TypedEmitter<{
       player1: {
         id: this.player1.id,
         name: this.player1.name,
-        readyToPlay: this.player1.readyToPlay,
+        hasPositions: !!this.player1.positions,
       },
       player2: this.player2 && {
         id: this.player2.id,
         name: this.player2.name,
-        readyToPlay: this.player2.readyToPlay,
+        hasPositions: !!this.player2.positions,
       },
     };
   }

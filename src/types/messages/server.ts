@@ -36,11 +36,6 @@ export type RoomPositionsSetMessage = {
   userId: string;
 };
 
-export type RoomReadyToPlayMessage = {
-  roomId: string;
-  userId: string;
-};
-
 export type GameStartMessage = {
   roomId: string;
 };
@@ -72,7 +67,6 @@ export type ServerMessages = {
   RoomLeave: RoomLeaveMessage;
   RoomDelete: RoomDeleteMessage;
   RoomPositionsSet: RoomPositionsSetMessage;
-  RoomReadyToPlay: RoomReadyToPlayMessage;
   GameStart: GameStartMessage;
   GameHit: GameHitMessage;
   GameMiss: GameMissMessage;
