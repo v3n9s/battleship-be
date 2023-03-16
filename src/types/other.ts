@@ -11,6 +11,7 @@ export type Room = {
   id: string;
   name: string;
   hasPassword: boolean;
+  started: boolean;
   player1: Player;
   player2?: Player | undefined;
 };
