@@ -75,7 +75,7 @@ export class Room extends TypedEmitter<{
   }
 
   startGame() {
-    if (!this.player1.positions || !this.player2?.positions) {
+    if (!this.player1.positions || !this.player2?.positions || this.game) {
       return;
     }
 
