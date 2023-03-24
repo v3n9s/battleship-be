@@ -12,6 +12,7 @@ import {
   MoveGameMessage,
   GetTokenMessage,
   SubmitTokenMessage,
+  CellIndex,
 } from '../types/index.js';
 
 export const idSchema: JSONSchemaType<string> = {
@@ -43,6 +44,24 @@ export const userSchema: JSONSchemaType<User> = {
 };
 
 export const userValidationFunc = ajv.compile(userSchema);
+
+const cellIndexSchema: JSONSchemaType<CellIndex> = {
+  type: 'array',
+  minItems: 2,
+  maxItems: 2,
+  items: [
+    {
+      type: 'integer',
+      minimum: 0,
+      maximum: 9,
+    },
+    {
+      type: 'integer',
+      minimum: 0,
+      maximum: 9,
+    },
+  ],
+};
 
 export const fieldSchema: JSONSchemaType<Field> = {
   type: 'array',
@@ -131,29 +150,11 @@ export const startGameMessageSchema: JSONSchemaType<StartGameMessage> = {
   required: ['roomId'],
 };
 
-const positionSchema: JSONSchemaType<[number, number]> = {
-  type: 'array',
-  minItems: 2,
-  maxItems: 2,
-  items: [
-    {
-      type: 'integer',
-      minimum: 0,
-      maximum: 9,
-    },
-    {
-      type: 'integer',
-      minimum: 0,
-      maximum: 9,
-    },
-  ],
-};
-
 export const moveGameMessageSchema: JSONSchemaType<MoveGameMessage> = {
   type: 'object',
   properties: {
     roomId: idSchema,
-    position: positionSchema,
+    position: cellIndexSchema,
   },
   required: ['roomId', 'position'],
 };

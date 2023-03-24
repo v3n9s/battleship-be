@@ -25,6 +25,8 @@ export type Game = {
   };
 };
 
+export type CellIndex = [number, number];
+
 export type Field = boolean[][];
 
 export type UserData = User & {
