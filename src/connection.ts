@@ -180,21 +180,17 @@ class Connection extends TypedEmitter<{
       payload: Object.fromEntries(
         store
           .getRooms()
-          .map(
-            (room) =>
-              [
-                room.id,
-                this.session && this.session.id === room.player1.id
-                  ? room.player1.positions?.toDto()
-                  : this.session && this.session.id === room.player2?.id
-                  ? room.player2?.positions?.toDto()
-                  : null,
-              ] as [string, MatrixOf<PositionsCell> | null],
-          )
-          .filter(([, positions]) => positions) as [
-          string,
-          MatrixOf<PositionsCell>,
-        ][],
+          .map<[string, MatrixOf<PositionsCell> | undefined]>((room) => [
+            room.id,
+            this.session && this.session.id === room.player1.id
+              ? room.player1.positions?.toDto()
+              : this.session && this.session.id === room.player2?.id
+              ? room.player2?.positions?.toDto()
+              : undefined,
+          ])
+          .filter(
+            (entry): entry is [string, MatrixOf<PositionsCell>] => !!entry[1],
+          ),
       ),
     });
   }
