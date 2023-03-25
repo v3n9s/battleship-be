@@ -5,7 +5,9 @@ export type Handler<
   P extends ObjectToUnion<ClientMessages> = ObjectToUnion<ClientMessages>,
 > = (args: { user: User; payload: P }) => void;
 
-export const handlers = {
+export const handlers: {
+  [K in keyof ClientMessages]?: Handler<ClientMessages[K]>;
+} = {
   CreateRoom: ({ user, payload: { name, password } }) => {
     store.createRoom({ name, password, user });
   },
@@ -24,6 +26,4 @@ export const handlers = {
   MoveGame: ({ user, payload: { roomId, position } }) => {
     store.getRoom(roomId).getGame().move(user.id, position);
   },
-} satisfies {
-  [K in keyof ClientMessages]?: Handler<ClientMessages[K]>;
 };
