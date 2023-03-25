@@ -18,16 +18,20 @@ export type Room = {
 
 export type Game = {
   player1: User & {
-    attacks: Field;
+    attacks: MatrixOf<AttacksCell>;
   };
   player2: User & {
-    attacks: Field;
+    attacks: MatrixOf<AttacksCell>;
   };
 };
 
 export type CellIndex = [number, number];
 
-export type Field = boolean[][];
+export type MatrixOf<T extends string> = T[][];
+
+export type PositionsCell = 'empty' | 'ship';
+
+export type AttacksCell = 'empty' | 'miss' | 'hit';
 
 export type UserData = User & {
   token: string;

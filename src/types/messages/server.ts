@@ -1,4 +1,4 @@
-import { Field, Room, User, UserData } from '../other.js';
+import { MatrixOf, PositionsCell, Room, User, UserData } from '../other.js';
 import { MessagesObjectToUnion } from '../utils.js';
 
 export type TokenCreateMessage = UserData;
@@ -8,7 +8,7 @@ export type TokenSetMessage = UserData | null;
 export type ExistingRoomsMessage = Room[];
 
 export type ExistingPositionsMessage = {
-  [roomId: string]: Field;
+  [roomId: string]: MatrixOf<PositionsCell>;
 };
 
 export type ErrorMessage = {

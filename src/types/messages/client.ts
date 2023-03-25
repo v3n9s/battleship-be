@@ -1,4 +1,4 @@
-import { Field } from '../other.js';
+import { MatrixOf, PositionsCell } from '../other.js';
 import { MessagesObjectToUnion } from '../utils.js';
 
 export type GetTokenMessage = {
@@ -25,7 +25,7 @@ export type LeaveRoomMessage = {
 
 export type SetPositionsMessage = {
   roomId: string;
-  positions: Field;
+  positions: MatrixOf<PositionsCell>;
 };
 
 export type StartGameMessage = {

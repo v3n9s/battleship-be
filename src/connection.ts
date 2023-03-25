@@ -10,13 +10,14 @@ import {
 import {
   ClientMessage,
   ClientMessages,
-  Field,
+  MatrixOf,
   GetTokenMessage,
   ServerMessage,
   ServerMessages,
   SubmitTokenMessage,
   User,
   UserData,
+  PositionsCell,
 } from './types/index.js';
 import { RoomNotFoundError, store } from './store.js';
 import {
@@ -188,9 +189,12 @@ class Connection extends TypedEmitter<{
                   : this.session && this.session.id === room.player2?.id
                   ? room.player2?.positions?.toDto()
                   : null,
-              ] as [string, Field | null],
+              ] as [string, MatrixOf<PositionsCell> | null],
           )
-          .filter(([, positions]) => positions) as [string, Field][],
+          .filter(([, positions]) => positions) as [
+          string,
+          MatrixOf<PositionsCell>,
+        ][],
       ),
     });
   }

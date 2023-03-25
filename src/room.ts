@@ -2,10 +2,17 @@ import crypto from 'crypto';
 import { TypedEmitter } from 'tiny-typed-emitter';
 import { Field } from './field.js';
 import { Game } from './game.js';
-import { Room as RoomDto, Field as FieldDto, User } from './types/index.js';
+import { isValidShipsField } from './ships-field.js';
+import {
+  Room as RoomDto,
+  User,
+  PositionsCell,
+  MatrixOf,
+  AttacksCell,
+} from './types/index.js';
 
 type Player = User & {
-  positions: Field | null;
+  positions: Field<PositionsCell> | null;
 };
 
 export class Room extends TypedEmitter<{
@@ -84,13 +91,13 @@ export class Room extends TypedEmitter<{
         id: this.player1.id,
         name: this.player1.name,
         positions: this.player1.positions,
-        attacks: new Field(),
+        attacks: new Field<AttacksCell>('empty'),
       },
       player2: {
         id: this.player2.id,
         name: this.player2.name,
         positions: this.player2.positions,
-        attacks: new Field(),
+        attacks: new Field<AttacksCell>('empty'),
       },
     });
     this.emit('gameStart', this.game);
@@ -103,24 +110,15 @@ export class Room extends TypedEmitter<{
     return this.game;
   }
 
-  isValidField(field: Field) {
-    try {
-      const ships = field.getShips().map(({ length }) => length);
-      return (
-        ships.every((v) => [1, 2, 3, 4].includes(v)) &&
-        ships.filter((v) => v === 1).length === 4 &&
-        ships.filter((v) => v === 2).length === 3 &&
-        ships.filter((v) => v === 3).length === 2 &&
-        ships.filter((v) => v === 4).length === 1
-      );
-    } catch {
-      return false;
-    }
-  }
-
-  setPositions({ userId, positions }: { userId: string; positions: FieldDto }) {
-    const field = new Field(positions);
-    if (!this.isValidField(field)) {
+  setPositions({
+    userId,
+    positions,
+  }: {
+    userId: string;
+    positions: MatrixOf<PositionsCell>;
+  }) {
+    const field = new Field('empty', positions);
+    if (!isValidShipsField(field.toDto())) {
       throw new InvalidFieldError();
     }
 

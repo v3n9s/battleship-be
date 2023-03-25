@@ -1,10 +1,16 @@
 import { TypedEmitter } from 'tiny-typed-emitter';
 import { Field } from './field.js';
-import { User, Game as GameDto, CellIndex } from './types/index.js';
+import {
+  User,
+  Game as GameDto,
+  CellIndex,
+  PositionsCell,
+  AttacksCell,
+} from './types/index.js';
 
 type Player = User & {
-  positions: Field;
-  attacks: Field;
+  positions: Field<PositionsCell>;
+  attacks: Field<AttacksCell>;
 };
 
 export class Game extends TypedEmitter<{
@@ -45,7 +51,10 @@ export class Game extends TypedEmitter<{
     };
   }
 
-  isAllShipsDestroyed(positions: Field, attacks: Field) {
+  isAllShipsDestroyed(
+    positions: Field<PositionsCell>,
+    attacks: Field<AttacksCell>,
+  ) {
     for (let i = 0; i < 10; i++) {
       for (let u = 0; u < 10; u++) {
         if (positions.at([i, u]) && !attacks.at([i, u])) {
@@ -64,15 +73,16 @@ export class Game extends TypedEmitter<{
     if (attacker.attacks.at(position)) {
       return;
     }
-    attacker.attacks.set(position, true);
     const cell = defender.positions.at(position);
-    if (cell) {
+    if (cell === 'ship') {
+      attacker.attacks.set(position, 'hit');
       this.emit('hit', { userId, position });
       if (this.isAllShipsDestroyed(defender.positions, attacker.attacks)) {
         this.ended = true;
         this.emit('end', attacker);
       }
-    } else {
+    } else if (cell === 'empty') {
+      attacker.attacks.set(position, 'miss');
       this.emit('miss', { userId, position });
       this.toggleMove();
     }

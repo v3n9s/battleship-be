@@ -3,7 +3,7 @@ import { ajv } from '../ajv-instance.js';
 import {
   ClientMessages,
   CreateRoomMessage,
-  Field,
+  MatrixOf,
   JoinRoomMessage,
   LeaveRoomMessage,
   SetPositionsMessage,
@@ -13,6 +13,8 @@ import {
   GetTokenMessage,
   SubmitTokenMessage,
   CellIndex,
+  PositionsCell,
+  AttacksCell,
 } from '../types/index.js';
 
 export const idSchema: JSONSchemaType<string> = {
@@ -63,7 +65,7 @@ const cellIndexSchema: JSONSchemaType<CellIndex> = {
   ],
 };
 
-export const fieldSchema: JSONSchemaType<Field> = {
+export const positionsFieldSchema: JSONSchemaType<MatrixOf<PositionsCell>> = {
   type: 'array',
   minItems: 10,
   maxItems: 10,
@@ -72,7 +74,23 @@ export const fieldSchema: JSONSchemaType<Field> = {
     minItems: 10,
     maxItems: 10,
     items: {
-      type: 'boolean',
+      type: 'string',
+      enum: ['empty', 'ship'],
+    },
+  },
+};
+
+export const attacksFieldSchema: JSONSchemaType<MatrixOf<AttacksCell>> = {
+  type: 'array',
+  minItems: 10,
+  maxItems: 10,
+  items: {
+    type: 'array',
+    minItems: 10,
+    maxItems: 10,
+    items: {
+      type: 'string',
+      enum: ['empty', 'miss', 'hit'],
     },
   },
 };
@@ -137,7 +155,7 @@ export const setPositionsMessageSchema: JSONSchemaType<SetPositionsMessage> = {
   type: 'object',
   properties: {
     roomId: idSchema,
-    positions: fieldSchema,
+    positions: positionsFieldSchema,
   },
   required: ['roomId', 'positions'],
 };
