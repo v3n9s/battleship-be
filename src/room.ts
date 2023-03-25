@@ -117,6 +117,9 @@ export class Room extends TypedEmitter<{
     userId: string;
     positions: MatrixOf<PositionsCell>;
   }) {
+    if (this.game) {
+      return;
+    }
     const field = new Field('empty', positions);
     if (!isValidShipsField(field.toDto())) {
       throw new InvalidFieldError();
