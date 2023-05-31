@@ -6,7 +6,9 @@ export type Handler<
 > = (args: { user: User; payload: P }) => void;
 
 export const handlers: {
-  [K in keyof ClientMessages]?: Handler<ClientMessages[K]>;
+  [K in keyof Omit<ClientMessages, 'GetToken' | 'SubmitToken'>]: Handler<
+    ClientMessages[K]
+  >;
 } = {
   CreateRoom: ({ user, payload: { name, password } }) => {
     store.createRoom({ name, password, user });
