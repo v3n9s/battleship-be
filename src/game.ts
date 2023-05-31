@@ -100,6 +100,7 @@ export class Game extends TypedEmitter<{
         name: this.player2.name,
         attacks: this.player2.attacks.toDto(),
       },
+      movingPlayerId: this.movingPlayerId,
     };
   }
 }

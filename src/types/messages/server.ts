@@ -1,4 +1,11 @@
-import { MatrixOf, PositionsCell, Room, User, UserData } from '../other.js';
+import {
+  Game,
+  MatrixOf,
+  PositionsCell,
+  Room,
+  User,
+  UserData,
+} from '../other.js';
 import { MessagesObjectToUnion } from '../utils.js';
 
 export type TokenCreateMessage = UserData;
@@ -38,6 +45,7 @@ export type RoomPositionsSetMessage = {
 
 export type GameStartMessage = {
   roomId: string;
+  game: Game;
 };
 
 export type GameHitMessage = {

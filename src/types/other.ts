@@ -11,7 +11,7 @@ export type Room = {
   id: string;
   name: string;
   hasPassword: boolean;
-  started: boolean;
+  game?: Game | undefined;
   player1: Player;
   player2?: Player | undefined;
 };
@@ -23,6 +23,7 @@ export type Game = {
   player2: User & {
     attacks: MatrixOf<AttacksCell>;
   };
+  movingPlayerId: string;
 };
 
 export type CellIndex = [number, number];

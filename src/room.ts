@@ -139,7 +139,7 @@ export class Room extends TypedEmitter<{
       id: this.id,
       name: this.name,
       hasPassword: !!this.password,
-      started: !!this.game,
+      game: this.game?.toDto(),
       player1: {
         id: this.player1.id,
         name: this.player1.name,

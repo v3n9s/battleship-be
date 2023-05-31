@@ -67,7 +67,7 @@ class Store extends TypedEmitter<{
         game.removeAllListeners();
       });
 
-      this.emit('gameStart', { roomId: room.id });
+      this.emit('gameStart', { roomId: room.id, game: room.getGame().toDto() });
     });
 
     room.on('delete', () => {
