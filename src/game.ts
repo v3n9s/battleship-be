@@ -57,7 +57,7 @@ export class Game extends TypedEmitter<{
   ) {
     for (let i = 0; i < 10; i++) {
       for (let u = 0; u < 10; u++) {
-        if (positions.at([i, u]) && !attacks.at([i, u])) {
+        if (positions.at([i, u]) === 'ship' && attacks.at([i, u]) === 'empty') {
           return false;
         }
       }
@@ -70,7 +70,7 @@ export class Game extends TypedEmitter<{
       return;
     }
     const { attacker, defender } = this.getMoveData(userId);
-    if (attacker.attacks.at(position)) {
+    if (attacker.attacks.at(position) !== 'empty') {
       return;
     }
     const cell = defender.positions.at(position);
