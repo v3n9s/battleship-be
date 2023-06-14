@@ -1,6 +1,12 @@
 import { Field } from './field.js';
 import { CellIndex, MatrixOf, PositionsCell, Ship } from './types/other.js';
 
+export const getFieldOf = <T extends string>(cell: T) => {
+  return new Array<T[]>(10)
+    .fill(new Array<T>(10).fill(cell))
+    .map((a) => [...a]);
+};
+
 export const isSameCell = (
   [cell1Row, cell1Col]: CellIndex,
   [cell2Row, cell2Col]: CellIndex,

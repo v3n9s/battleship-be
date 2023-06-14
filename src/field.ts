@@ -1,3 +1,4 @@
+import { getFieldOf } from './ships-field.js';
 import { CellIndex, MatrixOf } from './types/index.js';
 
 export class Field<T extends string> {
@@ -25,9 +26,3 @@ export class Field<T extends string> {
     return this.field;
   }
 }
-
-export const getFieldOf = <T extends string>(cell: T) => {
-  return new Array<T[]>(10)
-    .fill(new Array<T>(10).fill(cell))
-    .map((a) => [...a]);
-};
