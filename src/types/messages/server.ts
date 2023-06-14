@@ -68,6 +68,7 @@ export type GameMissMessage = {
 };
 
 export type GameEndMessage = {
+  roomId: string;
   winner: User;
 };
 

@@ -69,7 +69,7 @@ class Store extends TypedEmitter<{
       });
 
       game.on('end', (winner) => {
-        this.emit('gameEnd', { winner });
+        this.emit('gameEnd', { roomId: room.id, winner });
         game.removeAllListeners();
       });
 
