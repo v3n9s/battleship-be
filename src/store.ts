@@ -1,6 +1,7 @@
 import { TypedEmitter } from 'tiny-typed-emitter';
 import { Room } from './room.js';
 import {
+  GameDestroyMessage,
   GameEndMessage,
   GameHitMessage,
   GameMissMessage,
@@ -21,6 +22,7 @@ class Store extends TypedEmitter<{
   roomPositionsSet: (args: RoomPositionsSetMessage) => void;
   gameStart: (args: GameStartMessage) => void;
   gameHit: (args: GameHitMessage) => void;
+  gameDestroy: (args: GameDestroyMessage) => void;
   gameMiss: (args: GameMissMessage) => void;
   gameEnd: (args: GameEndMessage) => void;
 }> {
@@ -60,6 +62,10 @@ class Store extends TypedEmitter<{
 
       game.on('miss', ({ userId, position }) => {
         this.emit('gameMiss', { roomId: room.id, userId, position });
+      });
+
+      game.on('destroy', ({ userId, ship }) => {
+        this.emit('gameDestroy', { roomId: room.id, userId, ship });
       });
 
       game.on('end', (winner) => {

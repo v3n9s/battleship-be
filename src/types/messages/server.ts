@@ -3,6 +3,7 @@ import {
   MatrixOf,
   PositionsCell,
   Room,
+  Ship,
   User,
   UserData,
 } from '../other.js';
@@ -54,6 +55,12 @@ export type GameHitMessage = {
   position: [number, number];
 };
 
+export type GameDestroyMessage = {
+  roomId: string;
+  userId: string;
+  ship: Ship;
+};
+
 export type GameMissMessage = {
   roomId: string;
   userId: string;
@@ -77,6 +84,7 @@ export type ServerMessages = {
   RoomPositionsSet: RoomPositionsSetMessage;
   GameStart: GameStartMessage;
   GameHit: GameHitMessage;
+  GameDestroy: GameDestroyMessage;
   GameMiss: GameMissMessage;
   GameEnd: GameEndMessage;
 };

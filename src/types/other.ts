@@ -28,6 +28,8 @@ export type Game = {
 
 export type CellIndex = [number, number];
 
+export type Ship = CellIndex[];
+
 export type MatrixOf<T extends string> = T[][];
 
 export type PositionsCell = 'empty' | 'ship';

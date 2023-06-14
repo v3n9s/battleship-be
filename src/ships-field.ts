@@ -1,8 +1,7 @@
-import { CellIndex, MatrixOf, PositionsCell } from './types/other.js';
+import { Field } from './field.js';
+import { CellIndex, MatrixOf, PositionsCell, Ship } from './types/other.js';
 
-type Ship = CellIndex[];
-
-const isSameCell = (
+export const isSameCell = (
   [cell1Row, cell1Col]: CellIndex,
   [cell2Row, cell2Col]: CellIndex,
 ) => cell1Row === cell2Row && cell1Col === cell2Col;
@@ -77,6 +76,10 @@ const getRowedCells = (indicies: CellIndex[]) => {
     ships.push(ship);
   }
   return ships;
+};
+
+export const getShips = (field: Field<PositionsCell>) => {
+  return getRowedCells(getCellIndiciesWith(field.toDto(), 'ship'));
 };
 
 const doShipsHaveGaps = (ships: Ship[]) => {

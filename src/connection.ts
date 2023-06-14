@@ -52,6 +52,8 @@ class Connections {
 
     store.on('gameHit', this.sendArgAsPayloadToEveryone('GameHit'));
 
+    store.on('gameDestroy', this.sendArgAsPayloadToEveryone('GameDestroy'));
+
     store.on('gameMiss', this.sendArgAsPayloadToEveryone('GameMiss'));
 
     store.on('gameEnd', this.sendArgAsPayloadToEveryone('GameEnd'));

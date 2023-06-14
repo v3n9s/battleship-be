@@ -6,7 +6,9 @@ import {
   CellIndex,
   PositionsCell,
   AttacksCell,
+  Ship,
 } from './types/index.js';
+import { getShips, isSameCell } from './ships-field.js';
 
 type Player = User & {
   positions: Field<PositionsCell>;
@@ -15,6 +17,7 @@ type Player = User & {
 
 export class Game extends TypedEmitter<{
   hit: (args: { userId: string; position: CellIndex }) => void;
+  destroy: (args: { userId: string; ship: Ship }) => void;
   miss: (args: { userId: string; position: CellIndex }) => void;
   end: (winner: User) => void;
 }> {
@@ -73,15 +76,20 @@ export class Game extends TypedEmitter<{
     if (attacker.attacks.at(position) !== 'empty') {
       return;
     }
-    const cell = defender.positions.at(position);
-    if (cell === 'ship') {
+    const ship = getShips(defender.positions).find((ship) =>
+      ship.find((cellIndex) => isSameCell(cellIndex, position)),
+    );
+    if (ship) {
       attacker.attacks.set(position, 'hit');
       this.emit('hit', { userId, position });
+      if (ship.every((cellIndex) => attacker.attacks.at(cellIndex) === 'hit')) {
+        this.emit('destroy', { userId, ship });
+      }
       if (this.isAllShipsDestroyed(defender.positions, attacker.attacks)) {
         this.ended = true;
         this.emit('end', attacker);
       }
-    } else if (cell === 'empty') {
+    } else {
       attacker.attacks.set(position, 'miss');
       this.emit('miss', { userId, position });
       this.toggleMove();
