@@ -30,7 +30,10 @@ export const getCellsAroundCells = (cells: CellIndex[]): CellIndex[] => {
     .map((cell) => getCellsAroundCell(cell))
     .flat()
     .reduce<CellIndex[]>((acc, cell) => {
-      if (!cells.find((innerCell) => isSameCell(innerCell, cell))) {
+      if (
+        !cells.find((innerCell) => isSameCell(innerCell, cell)) &&
+        !acc.find((uniqueCell) => isSameCell(uniqueCell, cell))
+      ) {
         acc.push(cell);
       }
       return acc;
