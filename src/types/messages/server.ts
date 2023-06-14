@@ -1,4 +1,5 @@
 import {
+  CellIndex,
   Game,
   MatrixOf,
   PositionsCell,
@@ -59,6 +60,7 @@ export type GameDestroyMessage = {
   roomId: string;
   userId: string;
   ship: Ship;
+  cellsAroundShip: CellIndex[];
 };
 
 export type GameMissMessage = {

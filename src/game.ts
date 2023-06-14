@@ -8,7 +8,7 @@ import {
   AttacksCell,
   Ship,
 } from './types/index.js';
-import { getShips, isSameCell } from './ships-field.js';
+import { getCellsAroundCells, getShips, isSameCell } from './ships-field.js';
 
 type Player = User & {
   positions: Field<PositionsCell>;
@@ -17,7 +17,11 @@ type Player = User & {
 
 export class Game extends TypedEmitter<{
   hit: (args: { userId: string; position: CellIndex }) => void;
-  destroy: (args: { userId: string; ship: Ship }) => void;
+  destroy: (args: {
+    userId: string;
+    ship: Ship;
+    cellsAroundShip: CellIndex[];
+  }) => void;
   miss: (args: { userId: string; position: CellIndex }) => void;
   end: (winner: User) => void;
 }> {
@@ -27,7 +31,7 @@ export class Game extends TypedEmitter<{
 
   private movingPlayerId: string;
 
-  ended = false;
+  winner: User | null = null;
 
   constructor({ player1, player2 }: { player1: Player; player2: Player }) {
     super();
@@ -69,7 +73,7 @@ export class Game extends TypedEmitter<{
   }
 
   move(userId: string, position: CellIndex) {
-    if (!this.isUserAllowedToMove(userId) || this.ended) {
+    if (!this.isUserAllowedToMove(userId) || this.winner) {
       return;
     }
     const { attacker, defender } = this.getMoveData(userId);
@@ -83,10 +87,16 @@ export class Game extends TypedEmitter<{
       attacker.attacks.set(position, 'hit');
       this.emit('hit', { userId, position });
       if (ship.every((cellIndex) => attacker.attacks.at(cellIndex) === 'hit')) {
-        this.emit('destroy', { userId, ship });
+        const cellsAroundShip = getCellsAroundCells(ship).filter((cellIndex) =>
+          cellIndex.every((index) => index >= 0 && index <= 9),
+        );
+        cellsAroundShip.forEach((cellIndex) => {
+          attacker.attacks.set(cellIndex, 'miss');
+        });
+        this.emit('destroy', { userId, ship, cellsAroundShip });
       }
       if (this.isAllShipsDestroyed(defender.positions, attacker.attacks)) {
-        this.ended = true;
+        this.winner = { id: attacker.id, name: attacker.name };
         this.emit('end', attacker);
       }
     } else {
@@ -109,6 +119,7 @@ export class Game extends TypedEmitter<{
         attacks: this.player2.attacks.toDto(),
       },
       movingPlayerId: this.movingPlayerId,
+      winner: this.winner,
     };
   }
 }

@@ -64,8 +64,13 @@ class Store extends TypedEmitter<{
         this.emit('gameMiss', { roomId: room.id, userId, position });
       });
 
-      game.on('destroy', ({ userId, ship }) => {
-        this.emit('gameDestroy', { roomId: room.id, userId, ship });
+      game.on('destroy', ({ userId, ship, cellsAroundShip }) => {
+        this.emit('gameDestroy', {
+          roomId: room.id,
+          userId,
+          ship,
+          cellsAroundShip,
+        });
       });
 
       game.on('end', (winner) => {

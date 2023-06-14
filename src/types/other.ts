@@ -24,6 +24,7 @@ export type Game = {
     attacks: MatrixOf<AttacksCell>;
   };
   movingPlayerId: string;
+  winner: User | null;
 };
 
 export type CellIndex = [number, number];

@@ -19,7 +19,7 @@ const getCellsAroundCell = ([rowInd, colInd]: CellIndex): CellIndex[] => {
   ];
 };
 
-const getCellsAroundCells = (cells: CellIndex[]): CellIndex[] => {
+export const getCellsAroundCells = (cells: CellIndex[]): CellIndex[] => {
   return cells
     .map((cell) => getCellsAroundCell(cell))
     .flat()
